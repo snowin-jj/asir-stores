@@ -1,0 +1,193 @@
+{
+    "categories": [
+        {
+            "id": 1,
+            "name": "Building"
+        },
+        {
+            "id": 2,
+            "name": "Painting"
+        },
+        {
+            "id": 3,
+            "name": "Welding"
+        },
+        {
+            "id": 4,
+            "name": "Plumbing"
+        }
+    ],
+    "products": [
+        {
+            "id": 1,
+            "name": "Cement",
+            "purchasedPrice": 380,
+            "purchasedUnit": "40kg Bag",
+            "taxValue": 12,
+            "stock": 40,
+            "reorderPoint": 5,
+            "isActive": true,
+            "categoryId": 1
+        },
+        {
+            "id": 2,
+            "name": "Asian Gold Brown",
+            "purchasedPrice": 120,
+            "purchasedUnit": "1 tin",
+            "taxValue": 4,
+            "stock": 100,
+            "reorderPoint": 10,
+            "isActive": false,
+            "categoryId": 2
+        },
+        {
+            "id": 3,
+            "name": "4 inch Nail",
+            "purchasedPrice": 200,
+            "purchasedUnit": "1 box",
+            "taxValue": 8.9,
+            "stock": 50,
+            "reorderPoint": 5,
+            "isActive": true,
+            "categoryId": 3
+        }
+    ],
+    "prices": [
+        {
+            "id": 1,
+            "productId": 1,
+            "amount": 400,
+            "unit": "40kg"
+        },
+        {
+            "id": 2,
+            "productId": 2,
+            "amount": 100,
+            "unit": "1 tin"
+        },
+        {
+            "id": 3,
+            "productId": 3,
+            "amount": 200,
+            "unit": "1 box"
+        },
+        {
+            "id": 4,
+            "productId": 3,
+            "amount": 10,
+            "unit": "100g"
+        },
+        {
+            "id": 5,
+            "productId": 3,
+            "amount": 30,
+            "unit": "500g"
+        },
+        {
+            "id": 6,
+            "productId": 3,
+            "amount": 180,
+            "unit": "1kg"
+        }
+    ],
+    "customers": [
+        {
+            "id": 1,
+            "name": "Snowin",
+            "phone": "9360294348",
+            "email": "snowin@gmail.com",
+            "points": 100
+        },
+        {
+            "id": 2,
+            "name": "Mark",
+            "phone": "9361292348",
+            "points": 40
+        },
+        {
+            "id": 3,
+            "name": "Kevin",
+            "phone": "9460294348",
+            "email": "kevin@gmail.com",
+            "aadhaar": "2249-3285-1294"
+        }
+    ],
+    "orders": [
+        {
+            "id": 1,
+            "paymentMethod": "UPI",
+            "isPaid": true,
+            "paidAt": "2024-05-17T15:51:54.165Z",
+            "totalPrice": 1792
+        },
+        {
+            "id": 2,
+            "customerId": 3,
+            "paymentMethod": "CASH",
+            "isPaid": true,
+            "paidAt": "2024-05-17T15:51:54.165Z",
+            "totalPrice": 169.34
+        }
+    ],
+    "orderItems": [
+        {
+            "id": 1,
+            "quantity": 4,
+            "priceId": 1,
+            "orderId": 1,
+            "productId": 1
+        },
+        {
+            "id": 2,
+            "quantity": 1,
+            "priceId": 2,
+            "orderId": 2,
+            "productId": 2
+        },
+        {
+            "id": 3,
+            "quantity": 2,
+            "priceId": 5,
+            "orderId": 2,
+            "productId": 3
+        }
+    ],
+    "transactions": [
+        {
+            "id": 1,
+            "transactionType": "PURCHASE",
+            "quantity": 40,
+            "productId": 1
+        },
+        {
+            "id": 2,
+            "transactionType": "PURCHASE",
+            "quantity": 100,
+            "productId": 2
+        },
+        {
+            "id": 3,
+            "transactionType": "PURCHASE",
+            "quantity": 50,
+            "productId": 3
+        },
+        {
+            "id": 4,
+            "transactionType": "SALE",
+            "quantity": 4,
+            "productId": 1
+        },
+        {
+            "id": 5,
+            "transactionType": "SALE",
+            "quantity": 1,
+            "productId": 2
+        },
+        {
+            "id": 6,
+            "transactionType": "SALE",
+            "quantity": 2,
+            "productId": 3
+        }
+    ]
+}

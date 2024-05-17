@@ -1,0 +1,53 @@
+{
+  "name": "asir-stores",
+  "productName": "asir-stores",
+  "version": "1.0.0",
+  "description": "My Electron application description",
+  "main": ".vite/build/main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "eslint --ext .ts,.tsx ."
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.4.0",
+    "@electron-forge/maker-deb": "^7.4.0",
+    "@electron-forge/maker-rpm": "^7.4.0",
+    "@electron-forge/maker-squirrel": "^7.4.0",
+    "@electron-forge/maker-zip": "^7.4.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
+    "@electron-forge/plugin-fuses": "^7.4.0",
+    "@electron-forge/plugin-vite": "^7.4.0",
+    "@electron/fuses": "^1.8.0",
+    "@types/react": "^18.3.2",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "autoprefixer": "^10.4.19",
+    "electron": "30.0.6",
+    "eslint": "^8.0.1",
+    "eslint-plugin-import": "^2.25.0",
+    "postcss": "^8.4.38",
+    "prettier": "^3.2.5",
+    "tailwindcss": "^3.4.3",
+    "ts-node": "^10.0.0",
+    "typescript": "~4.5.4",
+    "vite": "^5.0.12"
+  },
+  "keywords": [],
+  "author": {
+    "name": "snowin-jj",
+    "email": "snowin.developer@gmail.com"
+  },
+  "license": "MIT",
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610",
+  "dependencies": {
+    "better-sqlite3": "^10.0.0",
+    "electron-squirrel-startup": "^1.0.1",
+    "knex": "^3.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
