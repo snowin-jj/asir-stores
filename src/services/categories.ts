@@ -1,13 +1,8 @@
-import { IpcMainInvokeEvent } from 'electron';
-
 import knex from '../lib/db';
 import type { CategoryPayload } from '../types/category';
 import { TABLES } from '../utils/constants';
 
-export async function createCategory(
-    _: IpcMainInvokeEvent,
-    payload: CategoryPayload,
-) {
+export async function createCategory(payload: CategoryPayload) {
     try {
         const categoryId = await knex(TABLES.CATEGORIES).insert(payload);
         const createdCategory = await knex(TABLES.CATEGORIES)
@@ -29,5 +24,19 @@ export async function getCategories() {
         const e = error as Error;
         console.log(e);
         return 'Failed to get categories.';
+    }
+}
+
+export async function getCategory(categoryId: number) {
+    try {
+        const category = await knex(TABLES.CATEGORIES)
+            .select('*')
+            .where('id', categoryId)
+            .first();
+        return JSON.stringify(category);
+    } catch (error) {
+        const e = error as Error;
+        console.log(e);
+        return 'Failed to get category.';
     }
 }

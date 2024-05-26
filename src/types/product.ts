@@ -6,7 +6,9 @@ export interface Product {
     description?: string;
     purchasedPrice: number;
     purchasedUnit: string;
-    taxValue: number;
+    purchasedUnitValue: number;
+    baseUnit: string;
+    baseUnitValue: number;
     stock: number;
     reorderPoint: number;
     isActive: boolean;
@@ -19,6 +21,8 @@ export interface Price {
     id: number;
     amount: number;
     unit: string;
+    taxValue: number;
+    quantity: number;
     productId: number;
 }
 

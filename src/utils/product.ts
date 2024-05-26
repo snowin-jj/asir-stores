@@ -1,4 +1,4 @@
-import { Product } from '../types/product';
+import type { Product } from '../types/product';
 
 type ProductWithPrice = Product & {
     priceId: number;

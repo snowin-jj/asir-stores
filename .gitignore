@@ -1,4 +1,4 @@
-./seeds/data.json
+database/seeds/data.json
 
 # Logs
 logs

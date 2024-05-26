@@ -1,33 +1,35 @@
-import { useEffect } from 'react';
+import { HashRouter, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 
-import { ProductWithPrice } from '../types/product';
-import { Transaction } from '../types/transaction';
+import HomePage from '@/renderer/pages/Home';
+import AdminDashboardPage from '@/renderer/pages/admin/AdminDashboard';
+import AdminLayout from '@/renderer/pages/admin';
+import NotfoundPage from '@/renderer/pages/Notfound';
+import TransactionsPage from '@/renderer/pages/admin/transactions';
+import ProductsPage from '@/renderer/pages/admin/products';
+import NewProductPage from '@/renderer/pages/admin/products/new';
+import NewTransactionPage from '@/renderer/pages/admin/transactions/new';
+import ProductPage from '@/renderer/pages/admin/products/product';
 
 export default function App() {
-    useEffect(() => {
-        (async () => {
-            const data = await window.api.getTransactions();
-            console.log(JSON.parse(data) as Transaction[]);
-        })();
-    }, []);
-
-    async function handleCreate() {
-        try {
-            const res = await window.api.createTransaction({
-                transactionType: 'PURCHASE',
-                productId: 4,
-                quantity: 10,
-            });
-            console.log(JSON.parse(res));
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
     return (
-        <main>
-            <h2>Hello</h2>
-            <button onClick={handleCreate}>Create</button>
-        </main>
+        <HashRouter>
+            <Routes>
+                <Route path="/" index element={<HomePage />} />
+                <Route path="/admin" element={<AdminLayout />}>
+                    <Route index element={<AdminDashboardPage />} />
+                    <Route path="products" element={<ProductsPage />} />
+                    <Route path="products/:id" element={<ProductPage />} />
+                    <Route path="products/new" element={<NewProductPage />} />
+                    <Route path="transactions" element={<TransactionsPage />} />
+                    <Route
+                        path="transactions/new"
+                        element={<NewTransactionPage />}
+                    />
+                </Route>
+                <Route path="*" element={<NotfoundPage />} />
+            </Routes>
+            <Toaster />
+        </HashRouter>
     );
 }

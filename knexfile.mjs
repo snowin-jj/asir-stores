@@ -1,3 +1,4 @@
+/* eslint-disable */
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
@@ -12,39 +13,36 @@ try {
     fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 }
 
+/**
+ * @type { Object.<string, import("knex").Knex.Config> }
+ */
 const config = {
-    /**
-     * @type { import("knex").Knex.Config }
-     */
     development: {
         client: 'better-sqlite3',
         connection: {
             filename: './dev.sqlite3',
         },
         migrations: {
-            directory: './migrations',
+            directory: './database/migrations',
         },
         seeds: {
-            directory: './seeds',
+            directory: './database/seeds',
         },
         useNullAsDefault: true,
     },
-    /**
-     * @type { import("knex").Knex.Config }
-     */
     production: {
         client: 'better-sqlite3',
         connection: {
             filename: dbPath,
         },
         migrations: {
-            directory: './resources/migrations',
+            directory: './resources/database/migrations',
         },
         seeds: {
-            directory: './resources/seeds',
+            directory: './resources/database/seeds',
         },
         useNullAsDefault: true,
     },
 };
 
-export default config;
+export default config
