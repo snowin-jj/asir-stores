@@ -1,5 +1,8 @@
 database/seeds/data.json
 
+dist/
+dev.sqlite3
+
 # Logs
 logs
 *.log
@@ -92,3 +95,5 @@ typings/
 
 # Electron-Forge
 out/
+dev.sqlite3
+dev.sqlite3

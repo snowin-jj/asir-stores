@@ -24,7 +24,7 @@ exports.up = async function (knex) {
         table.float('amount').notNullable();
         table.integer('quantity').notNullable();
         table.string('unit').notNullable();
-        table.float('taxValue').notNullable().defaultTo(0.0);
+        table.float('taxValue').defaultTo(0.0).notNullable();
         table
             .integer('productId')
             .references('id')
