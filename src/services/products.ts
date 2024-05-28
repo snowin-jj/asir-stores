@@ -1,11 +1,11 @@
 import knex from '../lib/db';
 
-import { TABLES } from '../utils/constants';
-import type { Price, Product, ProductPayload } from '../types/product';
-import { getProductsWithPriceAndCategory } from '../utils/product';
-import { createTransaction } from './transactions';
-import { getCategory } from './categories';
 import { UpdateProductPayload } from '@/renderer/components/form/product-form';
+import type { Product, ProductPayload } from '../types/product';
+import { TABLES } from '../utils/constants';
+import { getProductsWithPriceAndCategory } from '../utils/product';
+import { getCategory } from './categories';
+import { createTransaction } from './transactions';
 
 export async function createProduct(payload: ProductPayload) {
     const trx = await knex.transaction();
@@ -17,7 +17,6 @@ export async function createProduct(payload: ProductPayload) {
                 description: payload.description,
                 purchasedPrice: payload.purchasedPrice,
                 purchasedUnit: payload.purchasedUnit,
-                purchasedUnitValue: payload.purchasedUnitValue,
                 baseUnit: payload.baseUnit,
                 baseUnitValue: payload.baseUnitValue,
                 categoryId: payload.categoryId,
@@ -44,12 +43,8 @@ export async function createProduct(payload: ProductPayload) {
             trx,
         );
 
-        const createdProduct = await trx(TABLES.PRODUCTS)
-            .where('id', productId)
-            .first();
-
         await trx.commit();
-        return JSON.stringify(createdProduct);
+        return JSON.stringify('Product created');
     } catch (error) {
         await trx.rollback();
         const e = error as Error;
@@ -69,7 +64,6 @@ export async function updateProduct(
             description: payload.description,
             purchasedPrice: payload.purchasedPrice,
             purchasedUnit: payload.purchasedUnit,
-            purchasedUnitValue: payload.purchasedUnitValue,
             baseUnit: payload.baseUnit,
             baseUnitValue: payload.baseUnitValue,
             reorderPoint: payload.reorderPoint,
@@ -78,31 +72,37 @@ export async function updateProduct(
             categoryId: payload.categoryId,
         });
 
-        // Process selling prices
-        for (const price of payload.sellingPrices) {
-            const existingPrice = await trx(TABLES.PRICES)
-                .select('*')
-                .where({ productId, unit: price.unit })
-                .first();
+        await Promise.all(
+            payload.sellingPrices.map(async (price) => {
+                if (price.id) {
+                    const existingPrice = await trx(TABLES.PRICES)
+                        .where('id', price.id)
+                        .andWhere('productId', productId)
+                        .select('*')
+                        .first();
 
-            if (existingPrice) {
-                await trx(TABLES.PRICES)
-                    .where({ productId, unit: price.unit })
-                    .update({
-                        quantity: Number(price.quantity),
-                        amount: Number(price.amount),
-                        taxValue: Number(price.taxValue),
-                    });
-            } else {
-                await trx(TABLES.PRICES).insert({
-                    productId, // Ensure productId is included for new inserts
-                    quantity: Number(price.quantity),
+                    if (existingPrice) {
+                        return await trx(TABLES.PRICES)
+                            .where('id', existingPrice.id)
+                            .update({
+                                quantity: price.quantity,
+                                amount: price.amount,
+                                unit: price.unit,
+                                taxValue: price.taxValue,
+                            });
+                    }
+                }
+
+                // Insert if no matching price found
+                return await trx(TABLES.PRICES).insert({
+                    productId,
+                    quantity: price.quantity,
                     unit: price.unit,
-                    amount: Number(price.amount),
-                    taxValue: Number(price.taxValue),
+                    amount: price.amount,
+                    taxValue: price.taxValue,
                 });
-            }
-        }
+            }),
+        );
 
         await trx.commit();
         return JSON.stringify('Product updated');
@@ -150,7 +150,7 @@ export async function getProducts() {
     } catch (error) {
         const e = error as Error;
         console.log(e);
-        return 'Failed to get products.';
+        return JSON.stringify('Failed to get products.');
     }
 }
 export async function getProductsWithDetails() {
@@ -167,6 +167,8 @@ export async function getProductsWithDetails() {
                 'prices.id as priceId',
                 'prices.amount',
                 'prices.unit',
+                'prices.quantity',
+                'prices.taxValue',
                 'categories.name as categoryName',
                 'categories.description as categoryDescription',
             );
@@ -175,7 +177,7 @@ export async function getProductsWithDetails() {
     } catch (error) {
         const e = error as Error;
         console.log(e);
-        return 'Failed to get products with details.';
+        return JSON.stringify('Failed to get products with details.');
     }
 }
 
@@ -185,6 +187,20 @@ export async function getPrices(productId: number) {
             .select('*')
             .where('productId', productId);
         return JSON.stringify(prices);
+    } catch (error) {
+        const e = error as Error;
+        console.log(e);
+        return JSON.stringify('Failed to get prices.');
+    }
+}
+
+export async function getPrice(priceId: number) {
+    try {
+        const price = await knex(TABLES.PRICES)
+            .select('*')
+            .where('id', priceId)
+            .first();
+        return JSON.stringify(price);
     } catch (error) {
         const e = error as Error;
         console.log(e);
@@ -202,18 +218,3 @@ export async function deletePrice(priceId: number) {
         return JSON.stringify('Failed to delete price.');
     }
 }
-
-//
-// export async function getProduct(productId: number) {
-//     try {
-//         const product = await knex(TABLES.PRODUCTS)
-//             .select('*')
-//             .where('id', productId)
-//             .first();
-//         return JSON.stringify(product);
-//     } catch (error) {
-//         const e = error as Error;
-//         console.log(e);
-//         return 'Failed to get product.';
-//     }
-// }

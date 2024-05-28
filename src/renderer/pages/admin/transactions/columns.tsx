@@ -36,7 +36,7 @@ export const columns: ColumnDef<TransactionWithProduct>[] = [
             const product = row.original.product;
             return (
                 <p className="max-w-[15rem] truncate px-4">
-                    {product ? product.name : 'Unknown'}
+                    {product ? product.name : '-'}
                 </p>
             );
         },
@@ -71,7 +71,8 @@ export const columns: ColumnDef<TransactionWithProduct>[] = [
         cell: ({ row }) => {
             return (
                 <p className="px-1">
-                    {row.original.quantity} {row.original.product.purchasedUnit}
+                    {row.original.quantity}{' '}
+                    {row.original.product?.purchasedUnit}
                 </p>
             );
         },
@@ -102,6 +103,7 @@ export const columns: ColumnDef<TransactionWithProduct>[] = [
     },
     {
         id: 'actions',
+        header: 'Actions',
         cell: ({ row }) => {
             const transaction = row.original;
             return (
@@ -114,7 +116,10 @@ export const columns: ColumnDef<TransactionWithProduct>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuItem asChild>
-                            <Link to={`${transaction.id}`} className="w-full">
+                            <Link
+                                to={`/admin/transactions/${transaction.id}`}
+                                className="w-full"
+                            >
                                 View details
                             </Link>
                         </DropdownMenuItem>

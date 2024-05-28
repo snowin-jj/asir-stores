@@ -13,6 +13,10 @@ import {
 } from '@/renderer/components/ui/dropdown-menu';
 import { ProductWithCategory } from '@/types/product';
 import { convertToPurchasedUnit } from '@/utils/convert';
+import { useStore } from '@nanostores/react';
+import { $activePanel } from '@/renderer/store';
+import { Badge } from '@/renderer/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 export const columns: ColumnDef<ProductWithCategory>[] = [
     {
@@ -96,6 +100,10 @@ export const columns: ColumnDef<ProductWithCategory>[] = [
     {
         accessorKey: 'isActive',
         header: ({ column }) => {
+            const activePanel = useStore($activePanel);
+
+            if (activePanel === 'SALES') return;
+
             return (
                 <Button
                     variant="ghost"
@@ -110,15 +118,38 @@ export const columns: ColumnDef<ProductWithCategory>[] = [
             );
         },
         cell: ({ row }) => {
+            const activePanel = useStore($activePanel);
+
+            if (activePanel === 'SALES') return;
             const product = row.original;
             return (
                 <div className="px-4">
                     <ActivityBadge
                         reorderPoint={product.reorderPoint}
-                        stock={product.stock}
+                        stock={convertToPurchasedUnit(
+                            product.stock,
+                            product.baseUnitValue,
+                        )}
                         isActive={product.isActive}
                     />
                 </div>
+            );
+        },
+    },
+    {
+        id: 'reorderPoint',
+        accessorKey: 'reorderPoint',
+        header: 'Reorder Point',
+        cell: ({ row }) => {
+            const stock = convertToPurchasedUnit(
+                row.original.stock,
+                row.original.baseUnitValue,
+            );
+            const reorderPoint = row.original.reorderPoint;
+            return (
+                <Badge variant={stock <= reorderPoint ? 'warning' : 'default'}>
+                    {reorderPoint}
+                </Badge>
             );
         },
     },
@@ -132,7 +163,10 @@ export const columns: ColumnDef<ProductWithCategory>[] = [
     },
     {
         id: 'actions',
+        header: 'Actions',
         cell: ({ row }) => {
+            const activePanel = useStore($activePanel);
+
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -143,17 +177,29 @@ export const columns: ColumnDef<ProductWithCategory>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem asChild>
-                            <Link
-                                to="/admin/transactions/new"
-                                state={{
-                                    transactionType: 'PURCHASE',
-                                    ...row.original,
-                                }}
-                            >
-                                Make Purchase
-                            </Link>
-                        </DropdownMenuItem>
+                        {activePanel === 'ADMIN' && (
+                            <DropdownMenuItem asChild>
+                                <Link
+                                    to="/admin/transactions/new"
+                                    state={{
+                                        transactionType: 'PURCHASE',
+                                        ...row.original,
+                                    }}
+                                >
+                                    Make Purchase
+                                </Link>
+                            </DropdownMenuItem>
+                        )}
+                        {activePanel === 'SALES' && (
+                            <DropdownMenuItem asChild>
+                                <Link
+                                    to="/sales/orders/new"
+                                    state={{ product: row.original }}
+                                >
+                                    Make Order
+                                </Link>
+                            </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem asChild>
                             <Link to={`${row.original.id}`}>View details</Link>
                         </DropdownMenuItem>

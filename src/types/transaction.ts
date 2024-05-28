@@ -1,15 +1,17 @@
-import { Product } from '@/types/product';
+import { Price, ProductWithCategory } from '@/types/product';
 
 export interface Transaction {
     id: number;
     quantity: number;
     transactionType: 'SALE' | 'PURCHASE' | 'RETURN';
     productId: number;
+    priceId?: number;
     transactionDate: Date;
 }
 
 export interface TransactionWithProduct extends Transaction {
-    product: Product;
+    product: ProductWithCategory;
+    price?: Price;
 }
 
 export interface TransactionPayload

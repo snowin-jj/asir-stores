@@ -1,9 +1,11 @@
 import { Price, Product } from './product';
 
+export type PaymentMethod = 'CASH' | 'UPI' | 'CARD' | 'NET_BANKING';
+
 export interface Order {
     id: number;
     customerId?: number;
-    paymentMethod: 'CASH' | 'UPI' | 'CARD' | 'NET_BANKING';
+    paymentMethod?: PaymentMethod;
     isPaid?: boolean;
     paidAt?: Date;
     totalPrice: number;
@@ -19,21 +21,43 @@ export interface OrderItem {
     productId: number;
 }
 
-export interface OrderItemWithDetails {
+export interface Customer {
     id: number;
-    quantity: number;
-    priceId: number;
+    name: string;
+    phone: string;
+    email?: string;
+    aadhaar?: string;
+    points: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface CustomerWithDetails extends Customer {
+    orders: Omit<OrderWithDetails, 'customer'>;
+}
+
+export interface OrderItemWithDetails extends OrderItem {
     price: Price;
-    orderId: number;
-    productId: number;
     product: Product;
 }
 
-export interface OrderItemPayload extends Omit<OrderItem, 'id'> {}
+export interface OrderWithDetails extends Order {
+    orderItems: OrderItemWithDetails[];
+    customer: Customer;
+}
+export interface OrderWithCustomer extends Order {
+    customer: Customer;
+}
+
+export interface OrderItemPayload
+    extends Omit<OrderItemWithDetails, 'id' | 'orderId'> {}
+export interface CustomerPayload
+    extends Omit<Customer, 'id' | 'createdAt' | 'updatedAt'> {}
 
 export interface OrderPayload
     extends Omit<Order, 'id' | 'createdAt' | 'updatedAt'> {}
 export interface OrderPayloadWithItems
     extends Omit<Order, 'id' | 'createdAt' | 'updatedAt' | 'totalPrice'> {
     orderItems: Omit<OrderItem, 'id' | 'orderId'>[];
+    customer?: CustomerPayload;
 }

@@ -1,16 +1,6 @@
-import type { Product } from '../types/product';
-
-type ProductWithPrice = Product & {
-    priceId: number;
-    amount: number;
-    unit: string;
-    categoryName: string;
-    categoryDescription: string;
-};
-
-export function getProductsWithPriceAndCategory(products: ProductWithPrice[]) {
+export function getProductsWithPriceAndCategory(products: any[]) {
     return products.reduce((acc, product) => {
-        const existingProduct = acc.find((p) => p.id === product.id);
+        const existingProduct = acc.find((p: any) => p.id === product.id);
         if (existingProduct) {
             existingProduct.sellingPrices = existingProduct.sellingPrices || [];
             existingProduct.category = existingProduct.category || {};
@@ -24,6 +14,8 @@ export function getProductsWithPriceAndCategory(products: ProductWithPrice[]) {
                 id: product.priceId,
                 amount: product.amount,
                 unit: product.unit,
+                quantity: product.quantity,
+                taxValue: product.taxValue,
             });
         } else {
             acc.push({
@@ -38,6 +30,8 @@ export function getProductsWithPriceAndCategory(products: ProductWithPrice[]) {
                         id: product.priceId,
                         amount: product.amount,
                         unit: product.unit,
+                        quantity: product.quantity,
+                        taxValue: product.taxValue,
                     },
                 ],
             });

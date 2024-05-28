@@ -1,12 +1,11 @@
-import { ChevronLeft } from 'lucide-react';
+import { deleteProduct, getProduct } from '@/renderer/api/products';
+import BackButton from '@/renderer/components/back-button';
+import { ProductForm } from '@/renderer/components/form/product-form';
+import { Button } from '@/renderer/components/ui/button';
+import type { ProductWithCategory } from '@/types/product';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
-
-import { deleteProduct, getProduct } from '@/renderer/api/products';
-import { Button } from '@/renderer/components/ui/button';
-import type { ProductWithCategory } from '@/types/product';
-import { ProductForm } from '@/renderer/components/form/product-form';
 
 export default function ProductPage() {
     const { id } = useParams();
@@ -41,18 +40,12 @@ export default function ProductPage() {
     return (
         <main className="mx-auto w-full max-w-4xl space-y-4 py-8">
             <header className="flex w-full items-center justify-between">
-                <Button
-                    variant="link"
-                    className="p-0"
-                    onClick={() => navigate(-1)}
-                >
-                    <ChevronLeft className="mr-2 h-5 w-5" /> Back
-                </Button>
+                <BackButton />
                 {mode === 'VIEW' ? (
                     <div className={'space-x-6'}>
-                        <Button variant={'destructive'} onClick={handleDelete}>
+                        {/* <Button variant={'destructive'} onClick={handleDelete}>
                             Delete
-                        </Button>
+                        </Button> */}
                         <Button onClick={toggleMode}>Edit</Button>
                     </div>
                 ) : (

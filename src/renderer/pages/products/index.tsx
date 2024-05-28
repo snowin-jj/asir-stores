@@ -1,35 +1,41 @@
 import { useEffect, useState } from 'react';
+import { useStore } from '@nanostores/react';
 
-import { DataTable } from '@/renderer/components/data-table/index';
-import { ProductWithCategory } from '@/types/product';
-import { getProductsWithDetails } from '@/renderer/api/products';
-import { columns } from '@/renderer/pages/admin/products/columns';
-import { TableFilterType } from '@/renderer/components/data-table/data-table-faced-filter';
 import { getCategoriesAsLabel } from '@/renderer/api/categories';
-import { Button } from '@/renderer/components/ui/button';
-import { Link } from 'react-router-dom';
+import { getProductsWithDetails } from '@/renderer/api/products';
+import { DataPageHeader } from '@/renderer/components/data-table/data-page-header';
+import { TableFilterType } from '@/renderer/components/data-table/data-table-faced-filter';
+import { DataTable } from '@/renderer/components/data-table/index';
+import { columns } from '@/renderer/pages/products/columns';
+import { ProductWithCategory } from '@/types/product';
+import { $activePanel } from '@/renderer/store';
 
 export default function ProductsPage() {
     const [products, setProducts] = useState<ProductWithCategory[]>([]);
     const [categories, setCategories] = useState<TableFilterType[]>([]);
+    const activePanel = useStore($activePanel);
 
     useEffect(() => {
         (async () => {
             const data = await getProductsWithDetails();
             const categoriesData = await getCategoriesAsLabel();
-            setProducts(data);
+            if (activePanel === 'SALES') {
+                setProducts(data.filter((product) => product.isActive));
+            } else {
+                setProducts(data);
+            }
+
             setCategories(categoriesData);
         })();
     }, []);
 
     return (
         <main className={'container my-6 w-full'}>
-            <div>
-                <h1 className={'text-2xl font-bold'}>Products Page</h1>
-                <Button asChild>
-                    <Link to={'/admin/products/new'}>New Product</Link>
-                </Button>
-            </div>
+            <DataPageHeader
+                pageTitle="Products Page"
+                ctaLabel={activePanel === 'ADMIN' && 'New Product'}
+                path="/admin/products/new"
+            />
             <DataTable
                 data={products}
                 columns={columns}

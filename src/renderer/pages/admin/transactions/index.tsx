@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import { DataTable } from '@/renderer/components/data-table/index';
-import { columns } from './columns';
-import { TransactionWithProduct } from '@/types/transaction';
 import { getTransactionsWithDetails } from '@/renderer/api/transactions';
+import { DataPageHeader } from '@/renderer/components/data-table/data-page-header';
+import { DataTable } from '@/renderer/components/data-table/index';
 import { transactionTypes } from '@/renderer/data/ui';
+import { TransactionWithProduct } from '@/types/transaction';
+import { columns } from './columns';
 
 export default function TransactionsPage() {
     const [transactions, setTransactions] = useState<TransactionWithProduct[]>(
@@ -21,7 +22,7 @@ export default function TransactionsPage() {
 
     return (
         <main className={'container my-6 w-full'}>
-            <h1 className={'text-2xl font-bold'}>Transactions Page</h1>
+            <DataPageHeader pageTitle="Transaction Page" />
             <DataTable
                 data={transactions}
                 columns={columns}

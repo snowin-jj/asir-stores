@@ -1,4 +1,12 @@
 import {
+    createProduct,
+    deletePrice,
+    updateProduct,
+} from '@/renderer/api/products';
+import CategorySelector from '@/renderer/components/category-selector';
+import FormButton from '@/renderer/components/form/form-button';
+import { Button } from '@/renderer/components/ui/button';
+import {
     Form,
     FormControl,
     FormField,
@@ -7,25 +15,18 @@ import {
     FormMessage,
 } from '@/renderer/components/ui/form';
 import { Input } from '@/renderer/components/ui/input';
-import { Textarea } from '@/renderer/components/ui/textarea';
-import CategorySelector from '@/renderer/components/category-selector';
 import { Switch } from '@/renderer/components/ui/switch';
-import FormButton from '@/renderer/components/form/form-button';
-import { Button } from '@/renderer/components/ui/button';
-import { X } from 'lucide-react';
+import { Textarea } from '@/renderer/components/ui/textarea';
 import { sellingPricesColumns } from '@/renderer/data/ui';
-import { useForm } from 'react-hook-form';
-import { z, ZodError } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-    createProduct,
-    deletePrice,
-    updateProduct,
-} from '@/renderer/api/products';
 import { ProductPayload } from '@/types/product';
+import { convertToBaseUnit, convertToPurchasedUnit } from '@/utils/convert';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { X } from 'lucide-react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { z, ZodError } from 'zod';
 
 const sellingPricesSchema = z
     .array(
@@ -43,7 +44,6 @@ const formSchema = z.object({
     description: z.string().optional(),
     purchasedPrice: z.number(),
     purchasedUnit: z.string(),
-    purchasedUnitValue: z.number(),
     baseUnit: z.string(),
     baseUnitValue: z.number(),
     stock: z.number(),
@@ -58,6 +58,7 @@ interface ProductFormProps {
     payload?: FormSchema & {
         id: number;
         sellingPrices: Array<{
+            id?: number;
             quantity: string | number;
             unit: string;
             amount: string | number;
@@ -92,11 +93,13 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
             description: payload?.description || '',
             purchasedPrice: payload?.purchasedPrice,
             purchasedUnit: payload?.purchasedUnit,
-            purchasedUnitValue: payload?.purchasedUnitValue,
             baseUnit: payload?.baseUnit,
             baseUnitValue: payload?.baseUnitValue,
             reorderPoint: payload?.reorderPoint,
-            stock: payload?.stock,
+            stock: convertToPurchasedUnit(
+                payload?.stock,
+                payload?.baseUnitValue,
+            ),
             // @ts-ignore
             isActive: payload ? (payload.isActive === 0 ? false : true) : false,
             categoryId: payload?.categoryId,
@@ -119,31 +122,34 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
         try {
             setLoading(true);
             const sellingPrices = await sellingPricesSchema.parseAsync(rows);
+            console.log({ values, sellingPrices });
             if (mode === 'CREATE') {
-                console.log(values);
-                const product = await createProduct({
+                const res = await createProduct({
                     ...values,
                     sellingPrices,
                 } as ProductPayload);
-                toast.success('Product added successfully');
+                toast.success(res);
                 navigate('/admin/products');
             } else if (mode === 'EDIT') {
                 const res = await updateProduct(payload.id, {
                     name: values.name,
                     categoryId: values.categoryId,
                     description: values.description,
-                    stock: values.stock,
+                    stock: convertToBaseUnit(
+                        values.stock,
+                        payload.baseUnitValue,
+                        'RETURN',
+                    ),
                     reorderPoint: values.reorderPoint,
                     baseUnit: values.baseUnit,
                     baseUnitValue: values.baseUnitValue,
                     isActive: values.isActive,
-                    sellingPrices,
+                    sellingPrices: rows,
                     purchasedPrice: values.purchasedPrice,
                     purchasedUnit: values.purchasedUnit,
-                    purchasedUnitValue: values.purchasedUnitValue,
                 } as UpdateProductPayload);
                 toast.success(res);
-                navigate('/admin/products');
+                navigate(0);
             }
         } catch (error) {
             if (error instanceof ZodError) {
@@ -189,7 +195,7 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="flex w-full max-w-4xl flex-col items-start justify-center space-y-8 self-center"
+                className="flex w-full flex-col items-start justify-center space-y-8 self-center"
             >
                 <div className="flex w-full items-start justify-center gap-14">
                     <div className="w-full space-y-4">
@@ -279,31 +285,6 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
                                 </FormItem>
                             )}
                         />
-                        <FormField
-                            control={form.control}
-                            name="purchasedUnitValue"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Purchased Unit Value</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            type="number"
-                                            placeholder="Enter the purchased unit Value of the product"
-                                            disabled={mode === 'VIEW'}
-                                            onChange={(e) =>
-                                                form.setValue(
-                                                    'purchasedUnitValue',
-                                                    e.currentTarget
-                                                        .valueAsNumber,
-                                                )
-                                            }
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
                     </div>
                     <div className="w-full space-y-4">
                         <FormField
@@ -312,7 +293,10 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Stock Level in Purchased Unit
+                                        Stock Level in{' '}
+                                        {payload?.purchasedUnit ||
+                                            form.getValues('purchasedUnit') ||
+                                            'Purchased Unit'}
                                     </FormLabel>
                                     <FormControl>
                                         <Input
@@ -369,7 +353,12 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
                             name="reorderPoint"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Reorder Point</FormLabel>
+                                    <FormLabel>
+                                        Reorder Point in{' '}
+                                        {payload?.purchasedUnit ||
+                                            form.getValues('purchasedUnit') ||
+                                            'Purchased Unit'}
+                                    </FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
@@ -418,7 +407,11 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
                             name="baseUnitValue"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Base Unit Value</FormLabel>
+                                    <FormLabel>
+                                        {form.getValues('purchasedUnit')
+                                            ? `How many ${form.getValues('baseUnit')} in a ${form.getValues('purchasedUnit')}`
+                                            : 'Base Unit Value'}
+                                    </FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
@@ -461,9 +454,6 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
                                         disabled={mode === 'VIEW'}
                                         checked={field.value}
                                         onCheckedChange={field.onChange}
-                                        // onCheckedChange={(e) =>
-                                        //     form.setValue('isActive', e)
-                                        // }
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -486,6 +476,7 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
 
 interface SellingPricesProps {
     rows: {
+        id?: number;
         unit: string;
         amount: number | string;
         quantity: number | string;

@@ -6,24 +6,41 @@ import {
     getCategory,
 } from './services/categories';
 import {
-    createProduct, deletePrice,
+    createProduct,
+    deletePrice,
     deleteProduct,
+    getPrice,
     getPrices,
     getProduct,
     getProducts,
     getProductsWithDetails,
-    updateProduct
+    updateProduct,
 } from './services/products';
 import {
     createTransaction,
+    getTransaction,
     getTransactions,
     getTransactionsWithDetails,
 } from './services/transactions';
-import { createOrder, getOrders } from './services/orders';
+import {
+    createCustomer,
+    createOrder,
+    getCustomer,
+    getCustomers,
+    getOrders,
+    getOrdersWithDetails,
+    getOrderWithDetails,
+    updateCustomer,
+    updateOrder,
+} from './services/orders';
 import type { CategoryPayload } from './types/category';
 import type { ProductPayload } from './types/product';
 import type { TransactionPayload } from './types/transaction';
-import type { OrderPayloadWithItems } from './types/order';
+import type {
+    CustomerPayload,
+    OrderPayload,
+    OrderPayloadWithItems,
+} from './types/order';
 import { UpdateProductPayload } from '@/renderer/components/form/product-form';
 
 export const IPC_ACTIONS = {
@@ -38,10 +55,18 @@ export const IPC_ACTIONS = {
     UPDATE_PRODUCT: 'UPDATE_PRODUCT',
     DELETE_PRODUCT: 'DELETE_PRODUCT',
     GET_PRICES: 'GET_PRICES',
+    GET_PRICE: 'GET_PRICE',
     DELETE_PRICE: 'DELETE_PRICE',
     GET_ORDERS: 'GET_ORDERS',
+    GET_ORDERS_WITH_DETAILS: 'GET_ORDERS_WITH_DETAILS',
     GET_ORDER: 'GET_ORDER',
     CREATE_ORDER: 'CREATE_ORDER',
+    UPDATE_ORDER: 'UPDATE_ORDER',
+    GET_CUSTOMERS: 'GET_CUSTOMERS',
+    GET_CUSTOMER: 'GET_CUSTOMER',
+    CREATE_CUSTOMER: 'CREATE_CUSTOMER',
+    UPDATE_CUSTOMER: 'UPDATE_CUSTOMER',
+    DELETE_CUSTOMER: 'DELETE_CUSTOMER',
     GET_TRANSACTIONS: 'GET_TRANSACTIONS',
     GET_TRANSACTIONS_WITH_DETAILS: 'GET_TRANSACTIONS_WITH_DETAILS',
     GET_TRANSACTION: 'GET_TRANSACTION',
@@ -101,6 +126,11 @@ const ipcHandlers = [
             await getPrices(productId),
     },
     {
+        event: IPC_ACTIONS.GET_PRICE,
+        callback: async (_: IpcMainInvokeEvent, priceId: number) =>
+            await getPrice(priceId),
+    },
+    {
         event: IPC_ACTIONS.DELETE_PRICE,
         callback: async (_: IpcMainInvokeEvent, priceId: number) =>
             await deletePrice(priceId),
@@ -109,6 +139,11 @@ const ipcHandlers = [
         event: IPC_ACTIONS.CREATE_TRANSACTION,
         callback: async (_: IpcMainInvokeEvent, payload: TransactionPayload) =>
             await createTransaction(payload),
+    },
+    {
+        event: IPC_ACTIONS.GET_TRANSACTION,
+        callback: async (_: IpcMainInvokeEvent, transactionId: number) =>
+            await getTransaction(transactionId),
     },
     {
         event: IPC_ACTIONS.GET_TRANSACTIONS,
@@ -127,8 +162,47 @@ const ipcHandlers = [
         ) => await createOrder(payload),
     },
     {
+        event: IPC_ACTIONS.UPDATE_ORDER,
+        callback: async (
+            _: IpcMainInvokeEvent,
+            orderId: number,
+            payload: OrderPayload,
+        ) => await updateOrder(orderId, payload),
+    },
+    {
         event: IPC_ACTIONS.GET_ORDERS,
         callback: async (_: IpcMainInvokeEvent) => await getOrders(),
+    },
+    {
+        event: IPC_ACTIONS.GET_ORDERS_WITH_DETAILS,
+        callback: async (_: IpcMainInvokeEvent) => await getOrdersWithDetails(),
+    },
+    {
+        event: IPC_ACTIONS.GET_ORDER,
+        callback: async (_: IpcMainInvokeEvent, orderId: number) =>
+            await getOrderWithDetails(orderId),
+    },
+    {
+        event: IPC_ACTIONS.GET_CUSTOMERS,
+        callback: async (_: IpcMainInvokeEvent) => await getCustomers(),
+    },
+    {
+        event: IPC_ACTIONS.GET_CUSTOMER,
+        callback: async (_: IpcMainInvokeEvent, customerId: number) =>
+            await getCustomer(customerId),
+    },
+    {
+        event: IPC_ACTIONS.CREATE_CUSTOMER,
+        callback: async (_: IpcMainInvokeEvent, payload: CustomerPayload) =>
+            await createCustomer(payload),
+    },
+    {
+        event: IPC_ACTIONS.UPDATE_CUSTOMER,
+        callback: async (
+            _: IpcMainInvokeEvent,
+            customerId: number,
+            payload: CustomerPayload,
+        ) => await updateCustomer(customerId, payload),
     },
 ];
 

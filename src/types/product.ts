@@ -6,7 +6,6 @@ export interface Product {
     description?: string;
     purchasedPrice: number;
     purchasedUnit: string;
-    purchasedUnitValue: number;
     baseUnit: string;
     baseUnitValue: number;
     stock: number;

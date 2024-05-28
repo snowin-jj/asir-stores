@@ -1,17 +1,16 @@
-import { z } from 'zod';
-import toast from 'react-hot-toast';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Check, ChevronsUpDown, LoaderCircle } from 'lucide-react';
-
+import { cn } from '@/lib/utils';
+import { getProducts } from '@/renderer/api/products';
+import { createTransaction } from '@/renderer/api/transactions';
+import { DataPageHeader } from '@/renderer/components/data-table/data-page-header';
 import { Button } from '@/renderer/components/ui/button';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/renderer/components/ui/select';
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from '@/renderer/components/ui/command';
 import {
     Form,
     FormControl,
@@ -21,28 +20,29 @@ import {
     FormMessage,
 } from '@/renderer/components/ui/form';
 import { Input } from '@/renderer/components/ui/input';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import type { ProductWithCategory } from '@/types/product';
-import { Product } from '@/types/product';
+import { Label } from '@/renderer/components/ui/label';
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from '@/renderer/components/ui/popover';
-import { cn } from '@/lib/utils';
-import { getProducts } from '@/renderer/api/products';
 import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-} from '@/renderer/components/ui/command';
-import { createTransaction } from '@/renderer/api/transactions';
-import { Label } from '@/renderer/components/ui/label';
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/renderer/components/ui/select';
+import type { ProductWithCategory } from '@/types/product';
+import { Product } from '@/types/product';
 import { convertToPurchasedUnit } from '@/utils/convert';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Check, ChevronsUpDown, LoaderCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { z } from 'zod';
 
 const formSchema = z.object({
     productId: z.number(),
@@ -89,7 +89,7 @@ export default function NewTransactionPage() {
                 quantity: values.quantity,
                 transactionType: values.transactionType,
             });
-            toast.success('Transaction completed');
+            toast.success(res);
             navigate('/admin/transactions');
         } catch (error) {
             const e = error as Error;
@@ -107,13 +107,13 @@ export default function NewTransactionPage() {
     }
 
     return (
-        <main className="flex w-full flex-col gap-14 px-8 py-4">
-            <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold">New Transaction</h2>
-                <Button variant="secondary" onClick={() => navigate(-1)}>
-                    Cancel
-                </Button>
-            </div>
+        <main className="container my-6 flex w-full flex-col gap-14">
+            <DataPageHeader
+                pageTitle="New Transaction"
+                ctaLabel="Cancel"
+                variant="secondary"
+                action={() => navigate(-1)}
+            />
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
@@ -198,26 +198,37 @@ export default function NewTransactionPage() {
                     <FormField
                         control={form.control}
                         name="quantity"
-                        render={({ field }) => (
-                            <FormItem className="w-full">
-                                <FormLabel>Quantity</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        type="number"
-                                        placeholder="Product quantity"
-                                        min={0}
-                                        {...field}
-                                        onChange={(e) =>
-                                            form.setValue(
-                                                'quantity',
-                                                e.currentTarget.valueAsNumber,
-                                            )
-                                        }
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                        render={({ field }) => {
+                            const product = products.find(
+                                (p) => p.id === form.getValues('productId'),
+                            );
+                            return (
+                                <FormItem className="w-full">
+                                    <FormLabel>
+                                        Quantity in{' '}
+                                        {product
+                                            ? ` ${product.purchasedUnit}`
+                                            : 'Purchased Unit'}
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="number"
+                                            placeholder="Product quantity"
+                                            min={0}
+                                            {...field}
+                                            onChange={(e) =>
+                                                form.setValue(
+                                                    'quantity',
+                                                    e.currentTarget
+                                                        .valueAsNumber,
+                                                )
+                                            }
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            );
+                        }}
                     />
                     <FormField
                         control={form.control}

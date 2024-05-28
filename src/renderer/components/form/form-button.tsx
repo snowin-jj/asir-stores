@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 type FormButtonProps = {
     loading: boolean;
     loadingText: string;
-    disabled: boolean;
+    disabled?: boolean;
     btnText: string;
 };
 

@@ -2,10 +2,9 @@ import type { Product } from '../types/product';
 
 export function convertStockToBaseUnit(
     purchasedStock: number,
-    purchasedUnitValue: number,
     baseUnitValue: number,
 ): number {
-    return purchasedStock * purchasedUnitValue * baseUnitValue;
+    return purchasedStock * baseUnitValue;
 }
 
 export function convertSellingUnit(
@@ -33,7 +32,9 @@ export function convertToPurchasedUnit(
 export function convertToBaseUnit(
     quantity: number,
     baseUnitValue: number,
-    purchasedUnitValue: number,
+    transactionType: 'SALE' | 'PURCHASE' | 'RETURN',
 ) {
-    return quantity * purchasedUnitValue * baseUnitValue;
+    return transactionType === 'PURCHASE'
+        ? quantity * baseUnitValue
+        : quantity * baseUnitValue;
 }

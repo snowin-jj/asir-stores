@@ -9,7 +9,7 @@ exports.up = async function (knex) {
         table.string('phone').notNullable();
         table.string('email');
         table.string('aadhaar');
-        table.integer('points').defaultTo(0);
+        table.integer('points').defaultTo(0).notNullable();
         table.timestamps(true, true, true);
     });
 
@@ -38,7 +38,6 @@ exports.up = async function (knex) {
         table.string('description');
         table.float('purchasedPrice').notNullable();
         table.string('purchasedUnit').notNullable();
-        table.integer('purchasedUnitValue').notNullable();
         table.string('baseUnit').notNullable();
         table.integer('baseUnitValue').notNullable();
         table.bigInteger('stock').defaultTo(0);
@@ -54,13 +53,15 @@ exports.up = async function (knex) {
 
     await knex.schema.createTable('orders', (table) => {
         table.increments('id').primary();
-        table.integer('customerId').references('id').inTable('customers');
+        table
+            .integer('customerId')
+            .references('id')
+            .inTable('customers')
+            .onDelete('SET NULL');
         table
             .string('paymentMethod')
-            .notNullable()
-            .checkIn(['CASH', 'UPI', 'CARD', 'NET_BANKING'])
-            .defaultTo('CASH');
-        table.boolean('isPaid').defaultTo(false);
+            .checkIn(['CASH', 'UPI', 'CARD', 'NET_BANKING']);
+        table.boolean('isPaid').defaultTo(0);
         table.datetime('paidAt');
         table.float('totalPrice').notNullable();
         table.timestamps(true, true, true);
@@ -97,6 +98,11 @@ exports.up = async function (knex) {
         table
             .datetime('transactionDate', { useTz: false })
             .defaultTo(knex.fn.now());
+        table
+            .integer('priceId')
+            .references('id')
+            .inTable('prices')
+            .onDelete('RESTRICT');
         table
             .integer('productId')
             .references('id')

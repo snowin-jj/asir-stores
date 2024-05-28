@@ -1,5 +1,15 @@
-import * as React from 'react';
-import { useState } from 'react';
+import {
+    DataTableFilterType,
+    DataTableToolbar,
+} from '@/renderer/components/data-table/data-table-toolbar';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/renderer/components/ui/table';
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -12,19 +22,9 @@ import {
     useReactTable,
     VisibilityState,
 } from '@tanstack/react-table';
-
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/renderer/components/ui/table';
-import {
-    DataTableFilterType,
-    DataTableToolbar,
-} from '@/renderer/components/data-table/data-table-toolbar';
+import * as React from 'react';
+import { useState } from 'react';
+import { DataTablePagination } from './data-table-pagination';
 
 interface DataTableProps<TData, TValue> extends DataTableFilterType {
     columns: ColumnDef<TData, TValue>[];
@@ -64,6 +64,10 @@ export function DataTable<TData, TValue>({
             columnVisibility,
             rowSelection,
         },
+        defaultColumn: {
+            filterFn: 'includesString',
+        },
+        enableGlobalFilter: false,
     });
 
     return (
@@ -76,6 +80,10 @@ export function DataTable<TData, TValue>({
                 sorterAccessorKey={sorterAccessorKey}
                 sorterOptions={sorterOptions}
             />
+
+            {/* pagination */}
+            <DataTablePagination table={table} />
+
             <div className={'mt-4 rounded-md border p-4'}>
                 <Table>
                     <TableHeader>

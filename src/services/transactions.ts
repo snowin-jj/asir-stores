@@ -5,6 +5,7 @@ import type { Transaction, TransactionPayload } from '../types/transaction';
 import { TABLES } from '../utils/constants';
 import type { Product } from '../types/product';
 import { convertToBaseUnit } from '../utils/convert';
+import { getProduct } from './products';
 
 export async function createTransaction(
     payload: TransactionPayload,
@@ -21,14 +22,13 @@ export async function createTransaction(
         if (!product) throw new Error('Product not found.');
 
         const transactionId = (
-            await trx(TABLES.TRANSACTIONS).insert(payload)
+            await trx<TransactionPayload>(TABLES.TRANSACTIONS).insert(payload)
         )[0];
 
-        // TODO: Check if the PurchasedUnitValues works on sales
         const productQuantity = convertToBaseUnit(
             payload.quantity,
             product.baseUnitValue,
-            product.purchasedUnitValue,
+            payload.transactionType,
         );
 
         if (
@@ -44,17 +44,13 @@ export async function createTransaction(
                 .decrement('stock', productQuantity);
         }
 
-        const createdTransaction = await trx(TABLES.TRANSACTIONS)
-            .where('id', transactionId)
-            .first();
-
         if (!t) await trx.commit();
-        return JSON.stringify(createdTransaction);
+        return JSON.stringify('Transaction Completed');
     } catch (error) {
         if (!t) await trx.rollback();
         const e = error as Error;
         console.log(e);
-        return 'Failed to create transaction';
+        return JSON.parse('Failed to create transaction');
     }
 }
 
@@ -65,7 +61,31 @@ export async function getTransactions() {
     } catch (error) {
         const e = error as Error;
         console.log(e);
-        return 'Failed to get transactions';
+        return JSON.stringify('Failed to get transactions');
+    }
+}
+
+export async function getTransaction(transactionId: number) {
+    try {
+        const transaction: Transaction = await knex(TABLES.TRANSACTIONS)
+            .select('*')
+            .where('id', transactionId)
+            .first();
+        const product = JSON.parse(
+            await getProduct(transaction.productId),
+        ) as Product;
+        let price = null;
+        if (transaction.priceId) {
+            price = await knex(TABLES.PRICES)
+                .select('*')
+                .where('id', transaction.priceId)
+                .first();
+        }
+        return JSON.stringify({ ...transaction, product, price });
+    } catch (error) {
+        const e = error as Error;
+        console.log(e);
+        return JSON.stringify('Failed to get transaction');
     }
 }
 
@@ -90,6 +110,6 @@ export async function getTransactionsWithDetails() {
     } catch (error) {
         const e = error as Error;
         console.log(e);
-        return 'Failed to get transactions with details';
+        return JSON.stringify('Failed to get transactions with details');
     }
 }

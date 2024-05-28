@@ -1,14 +1,22 @@
+import exp from 'constants';
 import knex from '../lib/db';
+import { calculateTaxAmount } from '../lib/utils';
 import type {
+    CustomerPayload,
+    Order,
     OrderItemPayload,
     OrderPayload,
     OrderPayloadWithItems,
 } from '../types/order';
-import { TABLES } from '../utils/constants';
-import { calculateTaxAmount } from '../lib/utils';
-import { createTransaction } from './transactions';
-import { convertToPurchasedUnit } from '../utils/convert';
 import type { Price, Product } from '../types/product';
+import { TABLES } from '../utils/constants';
+import { convertToPurchasedUnit } from '../utils/convert';
+import {
+    formatOrderItems,
+    formatOrdersWithCustomer,
+    formatOrdersWithDetails,
+} from '../utils/order';
+import { createTransaction } from './transactions';
 
 export async function createOrder(payload: OrderPayloadWithItems) {
     const trx = await knex.transaction();
@@ -37,7 +45,9 @@ export async function createOrder(payload: OrderPayloadWithItems) {
                 throw new Error(`Price with id ${orderItem.priceId} not found`);
             }
 
-            totalPrice += orderItem.quantity * calculateTaxAmount(price);
+            totalPrice +=
+                orderItem.quantity *
+                calculateTaxAmount(price.amount, price.taxValue);
         }
 
         // Insert order
@@ -46,7 +56,7 @@ export async function createOrder(payload: OrderPayloadWithItems) {
             paymentMethod: payload.paymentMethod,
             isPaid: payload.isPaid,
             paidAt: payload.paidAt,
-            totalPrice,
+            totalPrice: Math.round(totalPrice),
         });
 
         // Insert order items
@@ -85,34 +95,221 @@ export async function createOrder(payload: OrderPayloadWithItems) {
                 {
                     quantity: transactionQuantity,
                     productId: orderItem.productId,
+                    priceId: orderItem.priceId,
                     transactionType: 'SALE',
                 },
                 trx,
             );
         }
 
-        const createdOrder = await trx(TABLES.ORDERS)
-            .select('*')
-            .where('id', orderId)
-            .first();
-
         await trx.commit();
-        return JSON.stringify(createdOrder);
+        return JSON.stringify('Order Created');
     } catch (error) {
         await trx.rollback();
         const e = error as Error;
         console.log(e);
-        return 'Failed to create order.';
+        return JSON.stringify('Failed to create order.');
+    }
+}
+
+export async function getOrdersWithDetails() {
+    try {
+        const orders = await knex(TABLES.ORDERS)
+            .select(
+                'orders.*',
+                'customers.id as customerId',
+                'customers.name as customerName',
+                'customers.phone',
+                'customers.email',
+                'customers.aadhaar',
+                'customers.points',
+                'customers.createdAt as customerCreatedAt',
+                'customers.updatedAt as customerUpdatedAt',
+                'orderItems.id as orderItemId',
+                'orderItems.quantity',
+                'orderItems.priceId',
+                'orderItems.productId',
+                'products.name',
+                'products.description',
+                'products.purchasedPrice',
+                'products.purchasedUnit',
+                'products.baseUnit',
+                'products.baseUnitValue',
+                'products.stock',
+                'products.reorderPoint',
+                'products.isActive',
+                'products.createdAt as productCreatedAt',
+                'products.updatedAt as productUpdatedAt',
+                'prices.amount',
+                'prices.quantity as priceQuantity',
+                'prices.unit',
+                'prices.taxValue',
+            )
+            .leftJoin(TABLES.CUSTOMERS, 'customers.id', 'orders.customerId')
+            .leftJoin(TABLES.ORDER_ITEMS, 'orders.id', 'orderItems.orderId')
+            .leftJoin(TABLES.PRICES, 'orderItems.priceId', 'prices.id')
+            .leftJoin(TABLES.PRODUCTS, 'orderItems.productId', 'products.id');
+
+        return JSON.stringify(formatOrdersWithDetails(orders));
+    } catch (error) {
+        const e = error as Error;
+        console.log(e);
+        return JSON.stringify('Failed to get orders.');
+    }
+}
+
+export async function getOrderWithDetails(orderId: number) {
+    try {
+        const order = await knex(TABLES.ORDERS)
+            .where('orders.id', orderId)
+            .first()
+            .select(
+                'orders.*',
+                'customers.name',
+                'customers.phone',
+                'customers.email',
+                'customers.aadhaar',
+                'customers.points',
+                'customers.createdAt as customerCreatedAt',
+                'customers.updatedAt as customerUpdatedAt',
+            )
+            .leftJoin(TABLES.CUSTOMERS, 'customers.id', 'orders.customerId');
+        const orderItems = await knex(TABLES.ORDER_ITEMS)
+            .where('orderItems.orderId', orderId)
+            .select(
+                'orderItems.*',
+                'products.name',
+                'products.description',
+                'products.purchasedPrice',
+                'products.purchasedUnit',
+                'products.baseUnit',
+                'products.baseUnitValue',
+                'products.stock',
+                'products.reorderPoint',
+                'products.isActive',
+                'products.createdAt as productCreatedAt',
+                'products.updatedAt as productUpdatedAt',
+                'prices.amount',
+                'prices.quantity as priceQuantity',
+                'prices.unit',
+                'prices.taxValue',
+            )
+            .leftJoin(TABLES.PRICES, 'prices.id', 'orderItems.priceId')
+            .leftJoin(TABLES.PRODUCTS, 'products.id', 'orderItems.productId');
+
+        return JSON.stringify({
+            id: order.id,
+            customerId: order.customerId,
+            paymentMethod: order.paymentMethod,
+            isPaid: order.isPaid,
+            paidAt: order.paidAt,
+            totalPrice: order.totalPrice,
+            createdAt: order.createdAt,
+            updatedAt: order.updatedAt,
+            customer: {
+                id: order.customerId,
+                name: order.name,
+                phone: order.phone,
+                email: order.email,
+                aadhaar: order.aadhaar,
+                points: order.points,
+                createdAt: order.customerCreatedAt,
+                updatedAt: order.customerUpdatedAt,
+            },
+            orderItems: formatOrderItems(orderItems),
+        });
+    } catch (error) {
+        const e = error as Error;
+        console.log(e);
+        return JSON.stringify('Failed to get orders.');
     }
 }
 
 export async function getOrders() {
     try {
-        const orders = await knex(TABLES.ORDERS).select('*');
-        return JSON.stringify(orders);
+        const orders = await knex(TABLES.ORDERS)
+            .select('orders.*')
+            .select(
+                'customers.id as customerId',
+                'customers.name as customerName',
+                'customers.phone',
+                'customers.email',
+                'customers.aadhaar',
+                'customers.points',
+                'customers.createdAt as customerCreatedAt',
+                'customers.updatedAt as customerUpdatedAt',
+            )
+            .leftJoin(TABLES.CUSTOMERS, 'customers.id', 'orders.customerId');
+
+        return JSON.stringify(formatOrdersWithCustomer(orders));
     } catch (error) {
         const e = error as Error;
         console.log(e);
-        return 'Failed to get orders.';
+        return JSON.stringify('Failed to create order.');
+    }
+}
+
+export async function updateOrder(orderId: number, payload: OrderPayload) {
+    try {
+        await knex(TABLES.ORDERS).update(payload).where('id', orderId);
+        return JSON.stringify('Order Updated');
+    } catch (error) {
+        const e = error as Error;
+        console.log(e);
+        return JSON.stringify('Failed to update order.');
+    }
+}
+
+/**
+ * CUSTOMERS
+ */
+
+export async function getCustomers() {
+    try {
+        const customers = await knex(TABLES.CUSTOMERS).select('*');
+        return JSON.stringify(customers);
+    } catch (error) {
+        const e = error as Error;
+        console.log(e);
+        return JSON.stringify('Failed to get customers.');
+    }
+}
+
+export async function getCustomer(customerId: number) {
+    try {
+        const customer = await knex(TABLES.CUSTOMERS)
+            .select('*')
+            .where('id', customerId)
+            .first();
+        return JSON.stringify(customer);
+    } catch (error) {
+        const e = error as Error;
+        console.log(e);
+        return JSON.stringify('Failed to get customer.');
+    }
+}
+
+export async function createCustomer(payload: CustomerPayload) {
+    try {
+        await knex(TABLES.CUSTOMERS).insert(payload);
+        return JSON.stringify('Customer Created');
+    } catch (error) {
+        const e = error as Error;
+        console.log(e);
+        return JSON.stringify('Failed to create customer.');
+    }
+}
+
+export async function updateCustomer(
+    customerId: number,
+    payload: CustomerPayload,
+) {
+    try {
+        await knex(TABLES.CUSTOMERS).update(payload).where('id', customerId);
+        return JSON.stringify('Customer Updated');
+    } catch (error) {
+        const e = error as Error;
+        console.log(e);
+        return JSON.stringify('Failed to update customer.');
     }
 }

@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
+import { useStore } from '@nanostores/react';
 
+import { $activePanel } from '@/renderer/store';
 import { Button } from './ui/button';
 import Logo from './ui/logo';
 
@@ -11,6 +13,8 @@ interface SidebarProps {
     page?: 'Admin' | 'Sales';
 }
 export function Sidebar({ page, links }: SidebarProps) {
+    const activePanel = useStore($activePanel);
+
     return (
         <main className="flex min-h-full w-full max-w-[15rem] flex-col justify-between border-2 p-4">
             <div className="flex flex-col gap-4">
@@ -33,11 +37,17 @@ export function Sidebar({ page, links }: SidebarProps) {
                 </nav>
             </div>
             <div className="flex flex-col items-start gap-2">
-                <Link to="/admin/settings" className="w-full">
-                    <Button variant="ghost" className="w-full justify-start">
-                        Settings
+                {activePanel === 'ADMIN' && (
+                    <Button
+                        asChild
+                        variant="ghost"
+                        className="w-full justify-start"
+                    >
+                        <Link to="/admin/settings" className="w-full">
+                            Settings
+                        </Link>
                     </Button>
-                </Link>
+                )}
                 <Button variant="ghost" className="w-full justify-start">
                     Logout
                 </Button>

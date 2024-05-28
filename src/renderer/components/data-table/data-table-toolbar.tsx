@@ -1,9 +1,3 @@
-import { Cross2Icon } from '@radix-ui/react-icons';
-import { SlidersHorizontal } from 'lucide-react';
-import { Table } from '@tanstack/react-table';
-import { ComponentType } from 'react';
-
-import { Input } from '@/renderer/components/ui/input';
 import { DataTableFacetedFilter } from '@/renderer/components/data-table/data-table-faced-filter';
 import { Button } from '@/renderer/components/ui/button';
 import {
@@ -12,6 +6,11 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from '@/renderer/components/ui/dropdown-menu';
+import { Input } from '@/renderer/components/ui/input';
+import { Cross2Icon } from '@radix-ui/react-icons';
+import { Table } from '@tanstack/react-table';
+import { SlidersHorizontal } from 'lucide-react';
+import { ComponentType } from 'react';
 
 interface SorterOptionsType {
     label: string;
@@ -23,7 +22,7 @@ export interface DataTableFilterType {
     filterLabel: string;
     filterAccessorKey: string;
     sorterAccessorKey?: string;
-    sorterLabel: string;
+    sorterLabel?: string;
     sorterOptions?: SorterOptionsType[];
 }
 

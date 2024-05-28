@@ -1,4 +1,24 @@
 import { BadgeIndianRupee, PackageMinus, ShoppingCart } from 'lucide-react';
+import { TableFilterType } from '../components/data-table/data-table-faced-filter';
+
+export const PAYMENT_METHODS = [
+    {
+        label: 'CASH',
+        VALUE: 'CASH',
+    },
+    {
+        label: 'UPI',
+        VALUE: 'UPI',
+    },
+    {
+        label: 'CARD',
+        VALUE: 'CARD',
+    },
+    {
+        label: 'NET_BANKING',
+        VALUE: 'NET_BANKING',
+    },
+];
 
 export const transactionTypes = [
     {
@@ -15,6 +35,19 @@ export const transactionTypes = [
         label: 'RETURN',
         value: 'RETURN',
         icon: PackageMinus,
+    },
+];
+
+export const orderStatus: TableFilterType[] = [
+    {
+        label: 'PAID',
+        value: 'PAID',
+        icon: undefined,
+    },
+    {
+        label: 'UNPAID',
+        value: 'UNPAID',
+        icon: undefined,
     },
 ];
 
@@ -45,6 +78,10 @@ export const salesPageSidebarLinks = [
     {
         to: '/sales/orders',
         label: 'Orders',
+    },
+    {
+        to: '/sales/customers',
+        label: 'Customers',
     },
 ];
 

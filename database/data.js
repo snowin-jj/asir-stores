@@ -23,7 +23,7 @@ module.exports = {
             name: 'Cement',
             purchasedPrice: 380,
             purchasedUnit: 'kg',
-            purchasedUnitValue: 10,
+
             baseUnit: 'g',
             baseUnitValue: 1000,
             stock: 500000,
@@ -36,7 +36,7 @@ module.exports = {
             name: 'Asian Gold Brown',
             purchasedPrice: 120,
             purchasedUnit: 'tin',
-            purchasedUnitValue: 1,
+
             baseUnit: 'tin',
             baseUnitValue: 1,
 
@@ -50,7 +50,7 @@ module.exports = {
             name: '4 inch Nail',
             purchasedPrice: 200,
             purchasedUnit: 'box',
-            purchasedUnitValue: 1,
+
             baseUnit: 'piece',
             baseUnitValue: 100,
 
@@ -130,14 +130,15 @@ module.exports = {
             phone: '9460294348',
             email: 'kevin@gmail.com',
             aadhaar: '2249-3285-1294',
+            points: 0,
         },
     ],
     orders: [
         {
             id: 1,
-            paymentMethod: 'UPI',
-            isPaid: true,
-            paidAt: '2024-05-17T15:51:54.165Z',
+            // paymentMethod: 'UPI',
+            isPaid: false,
+            paidAt: '2024-05-27T20:37:06.711Z',
             totalPrice: 1792,
         },
         {

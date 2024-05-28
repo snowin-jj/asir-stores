@@ -11,7 +11,6 @@ export async function getProduct(productId: number) {
         const product = JSON.parse(
             await window.api.getProduct(productId),
         ) as ProductWithCategory;
-        // console.log(product);
         return product;
     } catch (error) {
         const e = error as Error;
@@ -48,9 +47,7 @@ export async function getProductsWithDetails() {
 
 export async function createProduct(payload: ProductPayload) {
     try {
-        const data = JSON.parse(
-            await window.api.createProduct(payload),
-        ) as Product;
+        const data = JSON.parse(await window.api.createProduct(payload));
         return data;
     } catch (err) {
         const e = err as Error;
@@ -95,8 +92,19 @@ export async function updateProduct(
 
 export async function getPrices(productId: number) {
     try {
-        const res = await window.api.getPrices(productId);
-        const data = JSON.parse(res) as Price[];
+        const data = JSON.parse(
+            await window.api.getPrices(productId),
+        ) as Price[];
+        return data;
+    } catch (err) {
+        const e = err as Error;
+        throw new Error(e.message);
+    }
+}
+
+export async function getPrice(priceId: number) {
+    try {
+        const data = JSON.parse(await window.api.getPrice(priceId)) as Price;
         return data;
     } catch (err) {
         const e = err as Error;
