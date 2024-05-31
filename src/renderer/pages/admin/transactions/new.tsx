@@ -35,7 +35,7 @@ import {
 } from '@/renderer/components/ui/select';
 import type { ProductWithCategory } from '@/types/product';
 import { Product } from '@/types/product';
-import { convertToPurchasedUnit } from '@/utils/convert';
+import { convertToPurchasedUnit } from '@/utils/formatters';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, ChevronsUpDown, LoaderCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -76,7 +76,6 @@ export default function NewTransactionPage() {
     });
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values);
         try {
             setLoading(true);
             if (Number(values.quantity) <= 0) {

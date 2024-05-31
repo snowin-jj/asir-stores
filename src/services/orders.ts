@@ -1,16 +1,13 @@
-import exp from 'constants';
 import knex from '../lib/db';
-import { calculateTaxAmount } from '../lib/utils';
 import type {
     CustomerPayload,
-    Order,
     OrderItemPayload,
     OrderPayload,
     OrderPayloadWithItems,
 } from '../types/order';
 import type { Price, Product } from '../types/product';
 import { TABLES } from '../utils/constants';
-import { convertToPurchasedUnit } from '../utils/convert';
+import { convertToPurchasedUnit } from '../utils/formatters';
 import {
     formatOrderItems,
     formatOrdersWithCustomer,
@@ -45,9 +42,7 @@ export async function createOrder(payload: OrderPayloadWithItems) {
                 throw new Error(`Price with id ${orderItem.priceId} not found`);
             }
 
-            totalPrice +=
-                orderItem.quantity *
-                calculateTaxAmount(price.amount, price.taxValue);
+            totalPrice += orderItem.quantity * price.amount;
         }
 
         // Insert order
@@ -148,7 +143,8 @@ export async function getOrdersWithDetails() {
             .leftJoin(TABLES.CUSTOMERS, 'customers.id', 'orders.customerId')
             .leftJoin(TABLES.ORDER_ITEMS, 'orders.id', 'orderItems.orderId')
             .leftJoin(TABLES.PRICES, 'orderItems.priceId', 'prices.id')
-            .leftJoin(TABLES.PRODUCTS, 'orderItems.productId', 'products.id');
+            .leftJoin(TABLES.PRODUCTS, 'orderItems.productId', 'products.id')
+            .orderBy('createdAt', 'desc');
 
         return JSON.stringify(formatOrdersWithDetails(orders));
     } catch (error) {
@@ -173,7 +169,8 @@ export async function getOrderWithDetails(orderId: number) {
                 'customers.createdAt as customerCreatedAt',
                 'customers.updatedAt as customerUpdatedAt',
             )
-            .leftJoin(TABLES.CUSTOMERS, 'customers.id', 'orders.customerId');
+            .leftJoin(TABLES.CUSTOMERS, 'customers.id', 'orders.customerId')
+            .orderBy('createdAt', 'desc');
         const orderItems = await knex(TABLES.ORDER_ITEMS)
             .where('orderItems.orderId', orderId)
             .select(
@@ -239,7 +236,8 @@ export async function getOrders() {
                 'customers.createdAt as customerCreatedAt',
                 'customers.updatedAt as customerUpdatedAt',
             )
-            .leftJoin(TABLES.CUSTOMERS, 'customers.id', 'orders.customerId');
+            .leftJoin(TABLES.CUSTOMERS, 'customers.id', 'orders.customerId')
+            .orderBy('createdAt', 'desc');
 
         return JSON.stringify(formatOrdersWithCustomer(orders));
     } catch (error) {
@@ -266,7 +264,9 @@ export async function updateOrder(orderId: number, payload: OrderPayload) {
 
 export async function getCustomers() {
     try {
-        const customers = await knex(TABLES.CUSTOMERS).select('*');
+        const customers = await knex(TABLES.CUSTOMERS)
+            .select('*')
+            .orderBy('createdAt', 'desc');
         return JSON.stringify(customers);
     } catch (error) {
         const e = error as Error;

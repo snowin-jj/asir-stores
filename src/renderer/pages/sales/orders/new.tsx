@@ -1,4 +1,3 @@
-import { calculateTaxAmount, cn } from '@/lib/utils';
 import { createOrder, getCustomers } from '@/renderer/api/orders';
 import { getPrice, getProductsWithDetails } from '@/renderer/api/products';
 import { DataPageHeader } from '@/renderer/components/data-table/data-page-header';
@@ -26,14 +25,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/renderer/components/ui/select';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/renderer/components/ui/table';
 import { PAYMENT_METHODS } from '@/renderer/data/ui';
 import {
     Customer,
@@ -42,7 +33,7 @@ import {
     PaymentMethod,
 } from '@/types/order';
 import { Price, ProductWithCategory } from '@/types/product';
-import { convertToPurchasedUnit } from '@/utils/convert';
+import { convertToPurchasedUnit } from '@/utils/formatters';
 import { LoaderCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -99,7 +90,8 @@ export default function NewOrderPage() {
             setLoading(true);
             const res = await createOrder({
                 orderItems,
-                paymentMethod,
+                paymentMethod:
+                    isPaid && !paymentMethod ? 'CASH' : paymentMethod,
                 customerId: customer?.id,
                 isPaid,
                 paidAt: isPaid && new Date(),
@@ -329,7 +321,7 @@ function OrderDetails({
                     <Label>Payment Method</Label>
                     <Select
                         onValueChange={handlePaymentSelect}
-                        defaultValue={paymentMethod}
+                        defaultValue={paymentMethod || 'CASH'}
                     >
                         <SelectTrigger className="min-w-[180px]">
                             <SelectValue placeholder="Select a Payment Method" />

@@ -10,6 +10,7 @@ type DataPageHeaderProps = {
     isBackBtn?: boolean;
     action?: () => void;
     children?: ReactNode;
+    navState?: object;
     variant?:
         | 'link'
         | 'default'
@@ -26,6 +27,7 @@ export function DataPageHeader({
     children,
     isBackBtn = false,
     variant = 'default',
+    navState,
 }: DataPageHeaderProps) {
     const navigate = useNavigate();
 
@@ -41,7 +43,9 @@ export function DataPageHeader({
                     {children}
                     {path ? (
                         <Button variant={variant} asChild>
-                            <Link to={path}>{ctaLabel}</Link>
+                            <Link to={path} state={navState}>
+                                {ctaLabel}
+                            </Link>
                         </Button>
                     ) : (
                         (action || isBackBtn) && (

@@ -1,9 +1,8 @@
-import { calculateTaxAmount } from '@/lib/utils';
 import { getTransaction } from '@/renderer/api/transactions';
 import BackButton from '@/renderer/components/back-button';
 import { Button } from '@/renderer/components/ui/button';
 import { TransactionWithProduct } from '@/types/transaction';
-import { convertToBaseUnit } from '@/utils/convert';
+import { convertToBaseUnit } from '@/utils/formatters';
 import { ExternalLink } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -15,7 +14,6 @@ export default function TransactionPage() {
     useEffect(() => {
         (async () => {
             const data = await getTransaction(Number(id));
-            console.log(data);
 
             setTransaction(data);
         })();
@@ -63,13 +61,12 @@ export default function TransactionPage() {
                                     {convertToBaseUnit(
                                         transaction.quantity,
                                         transaction.product.baseUnitValue,
-                                        transaction.transactionType,
                                     )}{' '}
                                     {transaction.product.baseUnit}
                                 </p>
                             ) : (
                                 <p>
-                                    {transaction.quantity}
+                                    {transaction.quantity}{' '}
                                     {transaction.product.purchasedUnit}
                                 </p>
                             )}

@@ -1,4 +1,13 @@
-import { BadgeIndianRupee, PackageMinus, ShoppingCart } from 'lucide-react';
+import {
+    ArrowRightLeft,
+    BadgeIndianRupee,
+    Boxes,
+    Home,
+    Package,
+    PackageMinus,
+    ShoppingCart,
+    UsersRound,
+} from 'lucide-react';
 import { TableFilterType } from '../components/data-table/data-table-faced-filter';
 
 export const PAYMENT_METHODS = [
@@ -55,33 +64,40 @@ export const adminPageSidebarLinks = [
     {
         to: '/admin',
         label: 'Dashboard',
+        icon: Home,
     },
     {
         to: '/admin/products',
         label: 'Products',
+        icon: Package,
     },
     {
         to: '/admin/transactions',
         label: 'Transactions',
+        icon: ArrowRightLeft,
     },
 ];
 
 export const salesPageSidebarLinks = [
     {
         to: '/sales',
-        label: 'Home',
+        label: 'Dashboard',
+        icon: Home,
     },
     {
         to: '/sales/products',
         label: 'Products',
+        icon: Package,
     },
     {
         to: '/sales/orders',
         label: 'Orders',
+        icon: Boxes,
     },
     {
         to: '/sales/customers',
         label: 'Customers',
+        icon: UsersRound,
     },
 ];
 

@@ -12,7 +12,7 @@ import {
     DropdownMenuTrigger,
 } from '@/renderer/components/ui/dropdown-menu';
 import { ProductWithCategory } from '@/types/product';
-import { convertToPurchasedUnit } from '@/utils/convert';
+import { convertToPurchasedUnit } from '@/utils/formatters';
 import { useStore } from '@nanostores/react';
 import { $activePanel } from '@/renderer/store';
 import { Badge } from '@/renderer/components/ui/badge';

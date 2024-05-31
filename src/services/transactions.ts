@@ -4,7 +4,7 @@ import knex from '../lib/db';
 import type { Transaction, TransactionPayload } from '../types/transaction';
 import { TABLES } from '../utils/constants';
 import type { Product } from '../types/product';
-import { convertToBaseUnit } from '../utils/convert';
+import { convertToBaseUnit } from '../utils/formatters';
 import { getProduct } from './products';
 
 export async function createTransaction(
@@ -25,10 +25,8 @@ export async function createTransaction(
             await trx<TransactionPayload>(TABLES.TRANSACTIONS).insert(payload)
         )[0];
 
-        const productQuantity = convertToBaseUnit(
-            payload.quantity,
-            product.baseUnitValue,
-            payload.transactionType,
+        const productQuantity = Number(
+            convertToBaseUnit(payload.quantity, product.baseUnitValue),
         );
 
         if (
@@ -91,9 +89,9 @@ export async function getTransaction(transactionId: number) {
 
 export async function getTransactionsWithDetails() {
     try {
-        const transaction: Transaction[] = await knex(
-            TABLES.TRANSACTIONS,
-        ).select('*');
+        const transaction: Transaction[] = await knex(TABLES.TRANSACTIONS)
+            .select('*')
+            .orderBy('transactionDate', 'desc');
         const transactionsWithDetails = await Promise.all(
             transaction.map(async (transaction) => {
                 const product = await knex<Product>(TABLES.PRODUCTS)

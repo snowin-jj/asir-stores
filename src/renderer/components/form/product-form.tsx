@@ -19,7 +19,7 @@ import { Switch } from '@/renderer/components/ui/switch';
 import { Textarea } from '@/renderer/components/ui/textarea';
 import { sellingPricesColumns } from '@/renderer/data/ui';
 import { ProductPayload } from '@/types/product';
-import { convertToBaseUnit, convertToPurchasedUnit } from '@/utils/convert';
+import { convertToBaseUnit, convertToPurchasedUnit } from '@/utils/formatters';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X } from 'lucide-react';
 import { useState } from 'react';
@@ -122,7 +122,6 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
         try {
             setLoading(true);
             const sellingPrices = await sellingPricesSchema.parseAsync(rows);
-            console.log({ values, sellingPrices });
             if (mode === 'CREATE') {
                 const res = await createProduct({
                     ...values,
@@ -135,10 +134,8 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
                     name: values.name,
                     categoryId: values.categoryId,
                     description: values.description,
-                    stock: convertToBaseUnit(
-                        values.stock,
-                        payload.baseUnitValue,
-                        'RETURN',
+                    stock: Number(
+                        convertToBaseUnit(values.stock, payload.baseUnitValue),
                     ),
                     reorderPoint: values.reorderPoint,
                     baseUnit: values.baseUnit,
@@ -149,7 +146,7 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
                     purchasedUnit: values.purchasedUnit,
                 } as UpdateProductPayload);
                 toast.success(res);
-                navigate(0);
+                navigate('/admin/products');
             }
         } catch (error) {
             if (error instanceof ZodError) {
@@ -293,10 +290,11 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Stock Level in{' '}
+                                        Stock Level (
                                         {payload?.purchasedUnit ||
                                             form.getValues('purchasedUnit') ||
                                             'Purchased Unit'}
+                                        )
                                     </FormLabel>
                                     <FormControl>
                                         <Input
@@ -354,10 +352,11 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Reorder Point in{' '}
+                                        Reorder Point (
                                         {payload?.purchasedUnit ||
                                             form.getValues('purchasedUnit') ||
                                             'Purchased Unit'}
+                                        )
                                     </FormLabel>
                                     <FormControl>
                                         <Input
@@ -408,7 +407,9 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        {form.getValues('purchasedUnit')
+                                        {form.getValues('purchasedUnit') &&
+                                        form.getValues('purchasedUnit') !==
+                                            form.getValues('baseUnit')
                                             ? `How many ${form.getValues('baseUnit')} in a ${form.getValues('purchasedUnit')}`
                                             : 'Base Unit Value'}
                                     </FormLabel>

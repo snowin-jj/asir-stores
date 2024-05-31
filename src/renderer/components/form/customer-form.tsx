@@ -36,7 +36,6 @@ export default function CustomerForm({
         const form = e.currentTarget as HTMLFormElement;
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        console.log(data);
 
         try {
             setLoading(true);
@@ -53,6 +52,10 @@ export default function CustomerForm({
                     aadhaar: vaildatedCustomer.aadhaar,
                     points: 0,
                 });
+
+                if (location.state?.callbackUrl) {
+                    navigate(location.state.callbackUrl);
+                }
             } else {
                 res = await updateCustomer(customer.id, {
                     name: vaildatedCustomer.name,

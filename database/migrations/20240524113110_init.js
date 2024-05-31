@@ -47,7 +47,8 @@ exports.up = async function (knex) {
             .integer('categoryId')
             .references('id')
             .inTable('categories')
-            .onDelete('SET NULL');
+            .onDelete('SET NULL')
+            .nullable();
         table.timestamps(true, true, true);
     });
 
@@ -57,7 +58,8 @@ exports.up = async function (knex) {
             .integer('customerId')
             .references('id')
             .inTable('customers')
-            .onDelete('SET NULL');
+            .onDelete('SET NULL')
+            .nullable();
         table
             .string('paymentMethod')
             .checkIn(['CASH', 'UPI', 'CARD', 'NET_BANKING']);
@@ -74,7 +76,8 @@ exports.up = async function (knex) {
             .integer('priceId')
             .references('id')
             .inTable('prices')
-            .onDelete('SET NULL');
+            .onDelete('SET NULL')
+            .nullable();
         table
             .integer('orderId')
             .references('id')
@@ -84,7 +87,8 @@ exports.up = async function (knex) {
             .integer('productId')
             .references('id')
             .inTable('products')
-            .onDelete('SET NULL');
+            .onDelete('SET NULL')
+            .nullable();
     });
 
     await knex.schema.createTable('transactions', (table) => {
@@ -107,7 +111,8 @@ exports.up = async function (knex) {
             .integer('productId')
             .references('id')
             .inTable('products')
-            .onDelete('SET NULL');
+            .onDelete('SET NULL')
+            .nullable();
     });
 };
 

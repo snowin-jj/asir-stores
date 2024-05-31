@@ -1,3 +1,8 @@
+import {
+    calculateActualAmount,
+    calculateOrderItemsSubTotal,
+    calculateOrderItemsTaxAmount,
+} from '@/lib/utils';
 import { getOrder, updateOrder } from '@/renderer/api/orders';
 import BackButton from '@/renderer/components/back-button';
 import Bill from '@/renderer/components/bill';
@@ -30,11 +35,8 @@ import {
     TableRow,
 } from '@/renderer/components/ui/table';
 import { PAYMENT_METHODS } from '@/renderer/data/ui';
-import {
-    OrderItemWithDetails,
-    OrderWithDetails,
-    PaymentMethod,
-} from '@/types/order';
+import { OrderWithDetails, PaymentMethod } from '@/types/order';
+import { formatCurrency } from '@/utils/formatters';
 import { LoaderCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -47,7 +49,6 @@ export default function OrderPage() {
     useEffect(() => {
         (async () => {
             const data = await getOrder(Number(id));
-            console.log(data);
             setOrder(data);
         })();
     }, []);
@@ -189,7 +190,15 @@ function OrderSummary({ order }: OrderSummaryProps) {
                                 </TableCell>
                                 <TableCell>{item.price.taxValue}%</TableCell>
                                 <TableCell className="text-right">
-                                    ₹{item.price.amount * item.quantity}
+                                    {formatCurrency(
+                                        item.quantity *
+                                            Number(
+                                                calculateActualAmount(
+                                                    item.price.amount,
+                                                    item.price.taxValue,
+                                                ),
+                                            ),
+                                    )}
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -199,12 +208,33 @@ function OrderSummary({ order }: OrderSummaryProps) {
             <CardFooter className="w-full flex-col space-y-2">
                 <Separator className="mb-2" />
                 <div className="flex w-full justify-between">
-                    <p>Total Price</p>
-                    <p>₹{order.totalPrice}</p>
+                    <p>Sub Total</p>
+                    <p>
+                        {formatCurrency(
+                            Number(
+                                calculateOrderItemsSubTotal(order.orderItems),
+                            ),
+                        )}
+                    </p>
                 </div>
                 <div className="flex w-full justify-between">
+                    <p>Tax Amount</p>
+                    <p>
+                        {formatCurrency(
+                            Number(
+                                calculateOrderItemsTaxAmount(order.orderItems),
+                            ),
+                        )}
+                    </p>
+                </div>
+                <div className="flex w-full justify-between">
+                    <p>Total Amount</p>
+                    <p>{formatCurrency(order.totalPrice)}</p>
+                </div>
+                <Separator />
+                <div className="flex w-full justify-between">
                     <p>Payment</p>
-                    <p>{order.paymentMethod}</p>
+                    <p>{order.paymentMethod || 'Unknown'}</p>
                 </div>
                 <div className="flex w-full justify-between">
                     <p>Paid</p>

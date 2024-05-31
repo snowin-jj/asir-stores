@@ -1,5 +1,6 @@
-import { calculateTaxAmount, cn } from '@/lib/utils';
+import { calculateActualAmount, cn } from '@/lib/utils';
 import { OrderItemWithDetails } from '@/types/order';
+import { formatCurrency } from '@/utils/formatters';
 import {
     Table,
     TableBody,
@@ -24,9 +25,7 @@ export function OrderItemsTable({
     isOrdering = false,
 }: OrderItemsTableProps) {
     const totalAmount = orderItems.reduce((acc, item) => {
-        const itemsPriceWithTax =
-            calculateTaxAmount(item.price.amount, item.price.taxValue) *
-            item.quantity;
+        const itemsPriceWithTax = item.price.amount * item.quantity;
         return acc + itemsPriceWithTax;
     }, 0);
 
@@ -52,15 +51,24 @@ export function OrderItemsTable({
                     orderItems.map((orderItem, idx) => (
                         <TableRow
                             key={`${orderItem?.id || idx + 1}-${orderItem.product.name}`}
-                            onClick={() => handleItemSelect(orderItem)}
+                            onClick={() =>
+                                handleItemSelect && handleItemSelect(orderItem)
+                            }
                         >
                             <TableCell className="font-medium">
                                 {orderItem?.id || idx + 1}
                             </TableCell>
                             <TableCell>{orderItem.product.name}</TableCell>
                             <TableCell>
-                                ₹{orderItem.price.amount} /{' '}
-                                {orderItem.price.unit}
+                                {formatCurrency(
+                                    Number(
+                                        calculateActualAmount(
+                                            orderItem.price.amount,
+                                            orderItem.price.taxValue,
+                                        ),
+                                    ),
+                                )}{' '}
+                                / {orderItem.price.unit}
                             </TableCell>
                             <TableCell>
                                 {orderItem.quantity * orderItem.price.quantity}{' '}
@@ -70,12 +78,11 @@ export function OrderItemsTable({
                             <TableCell
                                 className={cn(!isOrdering && 'text-right')}
                             >
-                                ₹
-                                {Math.round(
-                                    calculateTaxAmount(
-                                        orderItem.price.amount,
-                                        orderItem.price.taxValue,
-                                    ) * orderItem.quantity,
+                                {formatCurrency(
+                                    Math.round(
+                                        orderItem.price.amount *
+                                            orderItem.quantity,
+                                    ),
                                 )}
                             </TableCell>
                             {isOrdering && (
@@ -103,7 +110,7 @@ export function OrderItemsTable({
                 <TableRow>
                     <TableCell colSpan={isOrdering ? 6 : 5}>Total</TableCell>
                     <TableCell className="text-right">
-                        ₹{Math.round(totalAmount)}
+                        {formatCurrency(Math.round(totalAmount))}
                     </TableCell>
                 </TableRow>
             </TableFooter>

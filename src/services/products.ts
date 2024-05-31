@@ -171,7 +171,8 @@ export async function getProductsWithDetails() {
                 'prices.taxValue',
                 'categories.name as categoryName',
                 'categories.description as categoryDescription',
-            );
+            )
+            .orderBy('createdAt', 'desc');
 
         return JSON.stringify(getProductsWithPriceAndCategory(products));
     } catch (error) {

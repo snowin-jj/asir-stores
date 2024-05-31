@@ -37,6 +37,7 @@ export async function getProductsWithDetails() {
         const products = JSON.parse(
             await window.api.getProductsWithDetails(),
         ) as ProductWithCategory[];
+
         return products;
     } catch (error) {
         const e = error as Error;

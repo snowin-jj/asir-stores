@@ -15,7 +15,6 @@ export default function TransactionsPage() {
     useEffect(() => {
         (async () => {
             const data = await getTransactionsWithDetails();
-            console.log(data);
             setTransactions(data);
         })();
     }, []);

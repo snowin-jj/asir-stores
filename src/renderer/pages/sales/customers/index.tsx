@@ -22,6 +22,7 @@ export default function CustomersPage() {
                 pageTitle="Customers Page"
                 ctaLabel="New Customer"
                 path="/sales/customers/new"
+                navState={{ callbackUrl: '/sales/customers' }}
             />
             <DataTable
                 data={customers}

@@ -6,13 +6,13 @@ const data = require('../data');
  */
 exports.seed = async function (knex) {
     // Deletes ALL existing entries
-    await knex('categories').del();
-    await knex('products').del();
-    await knex('prices').del();
-    await knex('customers').del();
-    await knex('orders').del();
     await knex('orderItems').del();
     await knex('transactions').del();
+    await knex('prices').del();
+    await knex('products').del();
+    await knex('categories').del();
+    await knex('orders').del();
+    await knex('customers').del();
 
     await knex('categories').insert(data.categories);
     await knex('products').insert(data.products);

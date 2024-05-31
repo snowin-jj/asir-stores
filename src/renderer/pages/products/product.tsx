@@ -18,7 +18,7 @@ export default function ProductPage() {
             const data = await getProduct(Number(id));
             setProduct(data);
         })();
-    }, []);
+    }, [mode]);
 
     async function handleDelete() {
         const choice = confirm(
@@ -49,7 +49,14 @@ export default function ProductPage() {
                         <Button onClick={toggleMode}>Edit</Button>
                     </div>
                 ) : (
-                    <Button onClick={() => navigate(0)}>Cancel</Button>
+                    <Button
+                        onClick={() => {
+                            setMode('VIEW');
+                            navigate(-1);
+                        }}
+                    >
+                        Cancel
+                    </Button>
                 )}
             </header>
             <ProductForm mode={mode} payload={product} />
