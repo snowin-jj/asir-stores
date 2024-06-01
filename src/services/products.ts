@@ -12,7 +12,7 @@ export async function createProduct(payload: ProductPayload) {
 
     try {
         const productId = (
-            await trx<ProductPayload>(TABLES.PRODUCTS).insert({
+            await trx(TABLES.PRODUCTS).insert({
                 name: payload.name,
                 description: payload.description,
                 purchasedPrice: payload.purchasedPrice,
@@ -22,6 +22,7 @@ export async function createProduct(payload: ProductPayload) {
                 categoryId: payload.categoryId,
                 reorderPoint: payload.reorderPoint,
                 isActive: payload.isActive,
+                createdAt: new Date(),
             })
         )[0];
 
@@ -70,6 +71,7 @@ export async function updateProduct(
             isActive: payload.isActive,
             stock: payload.stock,
             categoryId: payload.categoryId,
+            updatedAt: new Date(),
         });
 
         await Promise.all(

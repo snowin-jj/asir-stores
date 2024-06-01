@@ -115,17 +115,17 @@ export function SelectedOrder({ selectedOrder }: SelectedOrderProps) {
                         <div className="flex items-center justify-between">
                             <dt className="text-muted-foreground">Email</dt>
                             <dd>
-                                <a href="#">
+                                <p>
                                     {selectedOrder.customer?.email || 'Unknown'}
-                                </a>
+                                </p>
                             </dd>
                         </div>
                         <div className="flex items-center justify-between">
                             <dt className="text-muted-foreground">Phone</dt>
                             <dd>
-                                <a href="#">
+                                <p>
                                     {selectedOrder.customer?.phone || 'Unknown'}
-                                </a>
+                                </p>
                             </dd>
                         </div>
                     </dl>

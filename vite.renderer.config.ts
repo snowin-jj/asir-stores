@@ -14,6 +14,7 @@ export default defineConfig((env) => {
         mode,
         base: './',
         build: {
+            chunkSizeWarningLimit: 1000,
             outDir: `.vite/renderer/${name}`,
         },
         plugins: [pluginExposeRenderer(name)],

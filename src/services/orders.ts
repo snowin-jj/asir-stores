@@ -46,12 +46,13 @@ export async function createOrder(payload: OrderPayloadWithItems) {
         }
 
         // Insert order
-        const [orderId] = await trx<OrderPayload>(TABLES.ORDERS).insert({
+        const [orderId] = await trx(TABLES.ORDERS).insert({
             customerId: payload.customerId,
             paymentMethod: payload.paymentMethod,
             isPaid: payload.isPaid,
             paidAt: payload.paidAt,
             totalPrice: Math.round(totalPrice),
+            createdAt: new Date(),
         });
 
         // Insert order items
@@ -291,7 +292,11 @@ export async function getCustomer(customerId: number) {
 
 export async function createCustomer(payload: CustomerPayload) {
     try {
-        await knex(TABLES.CUSTOMERS).insert(payload);
+        await knex(TABLES.CUSTOMERS).insert({
+            ...payload,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
         return JSON.stringify('Customer Created');
     } catch (error) {
         const e = error as Error;
@@ -305,7 +310,9 @@ export async function updateCustomer(
     payload: CustomerPayload,
 ) {
     try {
-        await knex(TABLES.CUSTOMERS).update(payload).where('id', customerId);
+        await knex(TABLES.CUSTOMERS)
+            .update({ ...payload, updatedAt: new Date() })
+            .where('id', customerId);
         return JSON.stringify('Customer Updated');
     } catch (error) {
         const e = error as Error;

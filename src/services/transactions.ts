@@ -22,7 +22,10 @@ export async function createTransaction(
         if (!product) throw new Error('Product not found.');
 
         const transactionId = (
-            await trx<TransactionPayload>(TABLES.TRANSACTIONS).insert(payload)
+            await trx(TABLES.TRANSACTIONS).insert({
+                ...payload,
+                createdAt: new Date(),
+            })
         )[0];
 
         const productQuantity = Number(

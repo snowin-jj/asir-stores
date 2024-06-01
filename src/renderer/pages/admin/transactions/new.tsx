@@ -108,10 +108,9 @@ export default function NewTransactionPage() {
     return (
         <main className="container my-6 flex w-full flex-col gap-14">
             <DataPageHeader
+                isBackBtn
                 pageTitle="New Transaction"
-                ctaLabel="Cancel"
-                variant="secondary"
-                action={() => navigate(-1)}
+                buttons={[{ label: 'Cancel', variant: 'secondary' }]}
             />
             <Form {...form}>
                 <form

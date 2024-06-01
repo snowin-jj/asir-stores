@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils';
-import { getOrdersWithDetails } from '@/renderer/api/orders';
 import { OrderWithDetails } from '@/types/order';
 import {
     flexRender,
@@ -8,9 +7,7 @@ import {
     getPaginationRowModel,
     useReactTable,
 } from '@tanstack/react-table';
-import { useEffect, useState } from 'react';
 import { DataTablePagination } from '../data-table/data-table-pagination';
-import { PaidBadge } from '../paid-badge';
 import {
     Card,
     CardContent,
@@ -21,11 +18,11 @@ import {
 } from '../ui/card';
 import {
     Table,
-    TableHeader,
-    TableRow,
-    TableHead,
     TableBody,
     TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from '../ui/table';
 import { columns } from './column';
 

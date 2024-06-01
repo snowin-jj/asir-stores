@@ -20,8 +20,7 @@ export default function OrdersPage() {
         <main className={'container my-6 w-full'}>
             <DataPageHeader
                 pageTitle="Orders Page"
-                ctaLabel="New Order"
-                path="/sales/orders/new"
+                buttons={[{ label: 'New Order', path: '/sales/orders/new' }]}
             />
             <DataTable
                 data={orders}

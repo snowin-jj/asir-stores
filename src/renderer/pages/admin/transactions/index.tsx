@@ -21,7 +21,15 @@ export default function TransactionsPage() {
 
     return (
         <main className={'container my-6 w-full'}>
-            <DataPageHeader pageTitle="Transaction Page" />
+            <DataPageHeader
+                pageTitle="Transaction Page"
+                buttons={[
+                    {
+                        label: 'New Transaction',
+                        path: '/admin/transactions/new',
+                    },
+                ]}
+            />
             <DataTable
                 data={transactions}
                 columns={columns}

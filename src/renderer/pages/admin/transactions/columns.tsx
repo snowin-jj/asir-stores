@@ -11,6 +11,7 @@ import {
 import { transactionTypes } from '@/renderer/data/ui';
 import { Link } from 'react-router-dom';
 import { TransactionWithProduct } from '@/types/transaction';
+import { formatDate } from '@/utils/formatters';
 
 export const columns: ColumnDef<TransactionWithProduct>[] = [
     {
@@ -94,9 +95,11 @@ export const columns: ColumnDef<TransactionWithProduct>[] = [
         },
         cell: ({ row }) => {
             const date = row.original;
+            console.log(date.transactionDate);
+
             return (
                 <div className="px-5">
-                    <span>{new Date(date.transactionDate).toDateString()}</span>
+                    <span>{formatDate(new Date(date.transactionDate))}</span>
                 </div>
             );
         },

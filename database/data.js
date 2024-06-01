@@ -30,6 +30,8 @@ module.exports = {
             reorderPoint: 10,
             isActive: true,
             categoryId: 1,
+            createdAt: new Date(),
+            updatedAt: new Date(),
         },
         {
             id: 2,
@@ -44,6 +46,8 @@ module.exports = {
             reorderPoint: 10,
             isActive: false,
             categoryId: 2,
+            createdAt: new Date(),
+            updatedAt: new Date(),
         },
         {
             id: 3,
@@ -58,6 +62,8 @@ module.exports = {
             reorderPoint: 5,
             isActive: true,
             categoryId: 3,
+            createdAt: new Date(),
+            updatedAt: new Date(),
         },
     ],
     prices: [
@@ -117,12 +123,14 @@ module.exports = {
             phone: '9360294348',
             email: 'snowin@gmail.com',
             points: 100,
+            createdAt: new Date(),
         },
         {
             id: 2,
             name: 'Mark',
             phone: '9361292348',
             points: 40,
+            createdAt: new Date(),
         },
         {
             id: 3,
@@ -131,6 +139,7 @@ module.exports = {
             email: 'kevin@gmail.com',
             aadhaar: '2249-3285-1294',
             points: 0,
+            createdAt: new Date(),
         },
     ],
     orders: [
@@ -140,6 +149,7 @@ module.exports = {
             isPaid: false,
             paidAt: '2024-05-27T20:37:06.711Z',
             totalPrice: 1792,
+            createdAt: new Date(),
         },
         {
             id: 2,
@@ -148,6 +158,7 @@ module.exports = {
             isPaid: true,
             paidAt: '2024-05-17T15:51:54.165Z',
             totalPrice: 169.34,
+            createdAt: new Date(),
         },
     ],
     orderItems: [
@@ -179,18 +190,21 @@ module.exports = {
             transactionType: 'PURCHASE',
             quantity: 500,
             productId: 1,
+            createdAt: new Date(),
         },
         {
             id: 2,
             transactionType: 'PURCHASE',
             quantity: 100,
             productId: 2,
+            createdAt: new Date(),
         },
         {
             id: 3,
             transactionType: 'PURCHASE',
             quantity: 10,
             productId: 3,
+            createdAt: new Date(),
         },
     ],
 };

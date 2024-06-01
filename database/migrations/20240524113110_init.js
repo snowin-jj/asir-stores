@@ -1,3 +1,7 @@
+const moment = require('moment-timezone');
+
+// Get the current time in Asia/Kolkata time zone
+const currentTime = moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
@@ -10,7 +14,8 @@ exports.up = async function (knex) {
         table.string('email');
         table.string('aadhaar');
         table.integer('points').defaultTo(0).notNullable();
-        table.timestamps(true, true, true);
+        table.datetime('createdAt');
+        table.datetime('updatedAt');
     });
 
     await knex.schema.createTable('categories', (table) => {
@@ -49,7 +54,8 @@ exports.up = async function (knex) {
             .inTable('categories')
             .onDelete('SET NULL')
             .nullable();
-        table.timestamps(true, true, true);
+        table.datetime('createdAt');
+        table.datetime('updatedAt');
     });
 
     await knex.schema.createTable('orders', (table) => {
@@ -66,7 +72,7 @@ exports.up = async function (knex) {
         table.boolean('isPaid').defaultTo(0);
         table.datetime('paidAt');
         table.float('totalPrice').notNullable();
-        table.timestamps(true, true, true);
+        table.datetime('createdAt');
     });
 
     await knex.schema.createTable('orderItems', (table) => {
@@ -110,7 +116,7 @@ exports.up = async function (knex) {
             .inTable('products')
             .onDelete('SET NULL')
             .nullable();
-        table.timestamps(true, true, true);
+        table.datetime('createdAt');
     });
 };
 

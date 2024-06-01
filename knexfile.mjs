@@ -22,6 +22,14 @@ const config = {
         connection: {
             filename: './dev.sqlite3',
         },
+        pool: {
+            min: 2,
+            max: 10,
+            afterCreate: function (conn, cb) {
+                conn.prepare('PRAGMA journal_mode = WAL;').run();
+                cb(null, conn);
+            },
+        },
         migrations: {
             directory: './database/migrations',
         },
@@ -45,4 +53,4 @@ const config = {
     },
 };
 
-export default config
+export default config;

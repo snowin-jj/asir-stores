@@ -20,9 +20,13 @@ export default function CustomersPage() {
         <main className={'container my-6 w-full'}>
             <DataPageHeader
                 pageTitle="Customers Page"
-                ctaLabel="New Customer"
-                path="/sales/customers/new"
-                navState={{ callbackUrl: '/sales/customers' }}
+                buttons={[
+                    {
+                        label: 'New Customer',
+                        path: '/sales/customers/new',
+                        navState: { callbackUrl: '/sales/customers' },
+                    },
+                ]}
             />
             <DataTable
                 data={customers}

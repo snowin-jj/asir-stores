@@ -58,6 +58,7 @@ export default function NewOrderPage() {
         (async () => {
             const data = await getCustomers();
             setCustomers(data);
+            console.log(location.state);
         })();
     }, []);
 
@@ -115,8 +116,7 @@ export default function NewOrderPage() {
         <main className="flex w-full flex-col gap-14 px-8 py-4">
             <DataPageHeader
                 pageTitle="New Order"
-                ctaLabel="Cancel"
-                variant="secondary"
+                buttons={[{ label: 'Cancel', variant: 'secondary' }]}
                 isBackBtn={true}
             />
             <OrderItemsForm

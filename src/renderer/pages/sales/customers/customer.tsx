@@ -1,11 +1,23 @@
 import { getCustomer, getOrdersWithDetails } from '@/renderer/api/orders';
-import { DataPageHeader } from '@/renderer/components/data-table/data-page-header';
+import BackButton from '@/renderer/components/back-button';
+import {
+    DataHeaderButtonProps,
+    DataPageHeader,
+} from '@/renderer/components/data-table/data-page-header';
+import { DataTablePagination } from '@/renderer/components/data-table/data-table-pagination';
 import CustomerForm from '@/renderer/components/form/customer-form';
 import { OrderItemsTable } from '@/renderer/components/order/order-items-table';
 import { PaidBadge } from '@/renderer/components/paid-badge';
 import { Card, CardContent } from '@/renderer/components/ui/card';
 import { Separator } from '@/renderer/components/ui/separator';
 import { Customer, OrderWithDetails } from '@/types/order';
+import { formatDateTime } from '@/utils/formatters';
+import {
+    ColumnDef,
+    getCoreRowModel,
+    getPaginationRowModel,
+    useReactTable,
+} from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -13,18 +25,22 @@ export default function CustomerPage() {
     const [customer, setCustomer] = useState<Customer>();
     const [orders, setOrders] = useState<OrderWithDetails[]>([]);
     const [mode, setMode] = useState<'EDIT' | 'CREATE' | 'VIEW'>('VIEW');
-    const btnState =
+    const btnState: DataHeaderButtonProps[] =
         mode !== 'EDIT'
-            ? {
-                  label: 'Edit',
-                  action: () => setMode('EDIT'),
-                  variant: 'default',
-              }
-            : {
-                  label: 'Cancel',
-                  action: () => setMode('VIEW'),
-                  variant: 'secondary',
-              };
+            ? [
+                  {
+                      label: 'Edit',
+                      action: () => setMode('EDIT'),
+                      variant: 'default',
+                  },
+              ]
+            : [
+                  {
+                      label: 'Cancel',
+                      action: () => setMode('VIEW'),
+                      variant: 'secondary',
+                  },
+              ];
 
     const { id } = useParams();
 
@@ -39,30 +55,46 @@ export default function CustomerPage() {
         })();
     }, []);
 
+    const columns: ColumnDef<OrderWithDetails>[] = [
+        {
+            accessorKey: 'id',
+            header: 'Id',
+        },
+    ];
+
+    const table = useReactTable({
+        data: orders,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+    });
+
     return (
         <main className="container my-6 w-full space-y-8">
-            <DataPageHeader
-                pageTitle="Cutomer Details"
-                ctaLabel={btnState.label}
-                action={btnState.action}
-                //@ts-ignore
-                variant={btnState.variant}
-            />
+            <header>
+                <BackButton />
+                <DataPageHeader
+                    pageTitle="Cutomer Details"
+                    buttons={btnState}
+                />
+            </header>
             <CustomerForm
                 mode={mode}
                 customer={customer}
                 updateMode={(mode) => setMode(mode)}
             />
-            <h3 className="text-2xl font-bold">Order History</h3>
+            <h3 className="text-2xl font-bold">Sales History</h3>
             {orders.length > 0 ? (
-                orders.map((order) => (
-                    <div key={order.id} className="space-y-4">
+                table.getRowModel().rows.map(({ id, original }) => (
+                    <div key={id} className="space-y-4">
                         <header className="flex justify-between">
-                            <h4>{new Date(order.createdAt).toDateString()}</h4>
-                            <PaidBadge isPaid={order.isPaid} />
+                            <h4>
+                                {formatDateTime(new Date(original.createdAt))}
+                            </h4>
+                            <PaidBadge isPaid={original.isPaid} />
                         </header>
                         <Separator />
-                        <OrderItemsTable orderItems={order.orderItems} />
+                        <OrderItemsTable orderItems={original.orderItems} />
                     </div>
                 ))
             ) : (
@@ -72,6 +104,7 @@ export default function CustomerPage() {
                     </CardContent>
                 </Card>
             )}
+            {orders.length > 0 && <DataTablePagination table={table} />}
         </main>
     );
 }

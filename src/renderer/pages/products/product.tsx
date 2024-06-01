@@ -50,6 +50,7 @@ export default function ProductPage() {
                     </div>
                 ) : (
                     <Button
+                        variant="secondary"
                         onClick={() => {
                             setMode('VIEW');
                             navigate(-1);

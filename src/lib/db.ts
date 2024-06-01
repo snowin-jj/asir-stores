@@ -2,7 +2,7 @@ import Knex from 'knex';
 
 import config from '../../knexfile.mjs';
 
-const knex = Knex(config[process.env.NODE_ENV]);
+const knex = Knex(config['development']);
 
 knex.migrate
     .latest()
