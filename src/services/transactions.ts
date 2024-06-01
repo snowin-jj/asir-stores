@@ -54,7 +54,14 @@ export async function createTransaction(
 
 export async function getTransactions() {
     try {
-        const transactions = await knex(TABLES.TRANSACTIONS).select('*');
+        const transactions = await knex(TABLES.TRANSACTIONS).select(
+            'transactions.id',
+            'transactions.quantity',
+            'transactions.transactionType',
+            'transactions.createdAt as transactionDate',
+            'transactions.priceId',
+            'transactions.productId',
+        );
         return JSON.stringify(transactions);
     } catch (error) {
         const e = error as Error;
@@ -66,7 +73,14 @@ export async function getTransactions() {
 export async function getTransaction(transactionId: number) {
     try {
         const transaction: Transaction = await knex(TABLES.TRANSACTIONS)
-            .select('*')
+            .select(
+                'transactions.id',
+                'transactions.quantity',
+                'transactions.transactionType',
+                'transactions.createdAt as transactionDate',
+                'transactions.priceId',
+                'transactions.productId',
+            )
             .where('id', transactionId)
             .first();
         const product = JSON.parse(
@@ -90,7 +104,14 @@ export async function getTransaction(transactionId: number) {
 export async function getTransactionsWithDetails() {
     try {
         const transaction: Transaction[] = await knex(TABLES.TRANSACTIONS)
-            .select('*')
+            .select(
+                'transactions.id',
+                'transactions.quantity',
+                'transactions.transactionType',
+                'transactions.createdAt as transactionDate',
+                'transactions.priceId',
+                'transactions.productId',
+            )
             .orderBy('transactionDate', 'desc');
         const transactionsWithDetails = await Promise.all(
             transaction.map(async (transaction) => {

@@ -100,9 +100,6 @@ exports.up = async function (knex) {
             .checkIn(['SALE', 'PURCHASE', 'RETURN'])
             .defaultTo('SALE');
         table
-            .datetime('transactionDate', { useTz: false })
-            .defaultTo(knex.fn.now());
-        table
             .integer('priceId')
             .references('id')
             .inTable('prices')
@@ -113,6 +110,7 @@ exports.up = async function (knex) {
             .inTable('products')
             .onDelete('SET NULL')
             .nullable();
+        table.timestamps(true, true, true);
     });
 };
 

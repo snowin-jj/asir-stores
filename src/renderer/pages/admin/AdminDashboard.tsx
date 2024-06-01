@@ -61,7 +61,17 @@ async function getSalesData(
     );
     const paidOrders = thisMonthOrders.filter((order) => order.isPaid);
 
-    const amount = paidOrders.reduce((acc, order) => {
+    const amount = orders.reduce((acc, order) => {
+        const amount = order.totalPrice;
+        return acc + amount;
+    }, 0);
+
+    const debitAmount = orders.reduce((acc, order) => {
+        const amount = !order.isPaid ? order.totalPrice : 0;
+        return acc + amount;
+    }, 0);
+
+    const incomeAmount = paidOrders.reduce((acc, order) => {
         const amount = order.totalPrice;
         return acc + amount;
     }, 0);
@@ -91,8 +101,13 @@ async function getSalesData(
 
     return {
         orders,
+        paidOrders,
         numberOfSales: orders.length,
+        numberOfIncome: paidOrders.length,
         amount,
+        incomeAmount,
+        debitAmount,
+        numberOfDebit: orders.filter((order) => !order.isPaid).length,
         chartData: chartData.reduce((data, order) => {
             const formattedDate = format(new Date(order.createdAt));
             const entry = dayArray.find((day) => day.date === formattedDate);
@@ -107,6 +122,7 @@ async function getCustomersData(
     createdAfter: Date | null,
     createdBefore: Date | null,
     amount: number,
+    paidOrders: OrderWithDetails[],
 ) {
     const customers = await getCustomers();
 
@@ -133,9 +149,11 @@ async function getCustomersData(
         };
     });
 
+    const padiCustomers = paidOrders.map((order) => order.customer);
+
     return {
         averageValuePerCustomer:
-            customers.length === 0 ? 0 : amount / customers.length,
+            customers.length === 0 ? 0 : amount / padiCustomers.length,
         numberOfCustomers: customers.length,
         chartData: chartData.reduce((data, customer) => {
             const formattedDate = format(new Date(customer.createdAt));
@@ -202,7 +220,8 @@ export default function AdminDashboard() {
             const customersData = await getCustomersData(
                 newCustomersRangeOption.startDate,
                 newCustomersRangeOption.endDate,
-                salesData.amount,
+                salesData.incomeAmount,
+                salesData.paidOrders,
             );
 
             const productsData = await getProductsData();
@@ -228,6 +247,18 @@ export default function AdminDashboard() {
                     title="This Month Sales"
                     subtitle={`${formatNumber(sales?.numberOfSales)} Orders`}
                     body={formatCurrency(sales?.amount)}
+                    Icon={BadgeIndianRupee}
+                />
+                <DashboardCard
+                    title="This Month Income"
+                    subtitle={`${formatNumber(sales?.numberOfIncome)} Orders`}
+                    body={formatCurrency(sales?.incomeAmount)}
+                    Icon={BadgeIndianRupee}
+                />
+                <DashboardCard
+                    title="This Month Debit"
+                    subtitle={`${formatNumber(sales?.numberOfDebit)} Orders`}
+                    body={formatCurrency(sales?.debitAmount)}
                     Icon={BadgeIndianRupee}
                 />
                 <DashboardCard
