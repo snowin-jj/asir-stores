@@ -40,7 +40,7 @@ const CURRENCY_FORMATTER = new Intl.NumberFormat('en-US', {
 });
 
 export function formatCurrency(amount: number) {
-    return CURRENCY_FORMATTER.format(amount);
+    return CURRENCY_FORMATTER.format(Number(amount.toFixed(2)));
 }
 
 const NUMBER_FORMATTER = new Intl.NumberFormat('en-US');

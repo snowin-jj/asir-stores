@@ -269,7 +269,7 @@ export default function AdminDashboard() {
                 />
                 <DashboardCard
                     title="Customers"
-                    subtitle={`${formatNumber(Math.round(customers?.averageValuePerCustomer))} Average Value`}
+                    subtitle={`${formatNumber((customers?.averageValuePerCustomer))} Average Value`}
                     body={formatNumber(customers?.numberOfCustomers)}
                     Icon={UsersRound}
                 />

@@ -7,3 +7,7 @@ export const TABLES = {
     ORDER_ITEMS: 'orderItems',
     TRANSACTIONS: 'transactions',
 };
+
+export const ENV =
+    process.env.NODE_ENV ||
+    ('production' as 'development' | 'production' | 'test');

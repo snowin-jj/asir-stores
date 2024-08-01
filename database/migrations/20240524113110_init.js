@@ -1,7 +1,3 @@
-const moment = require('moment-timezone');
-
-// Get the current time in Asia/Kolkata time zone
-const currentTime = moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }

@@ -33,7 +33,7 @@ import {
     PaymentMethod,
 } from '@/types/order';
 import { Price, ProductWithCategory } from '@/types/product';
-import { convertToPurchasedUnit } from '@/utils/formatters';
+import { convertToBaseUnit, convertToPurchasedUnit } from '@/utils/formatters';
 import { LoaderCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -89,6 +89,9 @@ export default function NewOrderPage() {
     async function handlePlaceOrder() {
         try {
             setLoading(true);
+            if (!isPaid && !customer) {
+                throw new Error("Customer is required")
+            }
             const res = await createOrder({
                 orderItems,
                 paymentMethod:
@@ -175,6 +178,8 @@ function OrderItemsForm({
         const product = products.find((product) => product.id === productId);
         if (product) {
             setSelectedProduct(product);
+            console.log({product});
+            
         }
     }
 
@@ -231,11 +236,15 @@ function OrderItemsForm({
                         type="text"
                         placeholder="Stock Level"
                         value={
-                            selectedProduct
-                                ? `${convertToPurchasedUnit(
+                            selectedProduct && selectedPrice
+                                ? (
+                                    selectedPrice.unit == selectedProduct.purchasedUnit ? (
+                                        `${convertToPurchasedUnit(
                                       selectedProduct.stock,
                                       selectedProduct.baseUnitValue,
                                   )} ${selectedProduct.purchasedUnit}`
+                                    ): `${selectedProduct.stock} ${selectedProduct.baseUnit}`
+                                )
                                 : ''
                         }
                     />

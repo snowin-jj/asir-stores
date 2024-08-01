@@ -27,17 +27,18 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { z, ZodError } from 'zod';
+import { Label } from '../ui/label';
 
 const sellingPricesSchema = z
     .array(
         z.object({
-            amount: z.number(),
+            amount: z.number({message: 'Amount is required'}),
             unit: z.string(),
-            taxValue: z.number(),
-            quantity: z.number(),
+            taxValue: z.number({message: 'Tax Value is required'}),
+            quantity: z.number({message: 'Quantity is required'}),
         }),
     )
-    .min(1);
+    .min(1, {message: 'Add at-least one selling price'});
 
 const formSchema = z.object({
     name: z.string(),
@@ -152,7 +153,7 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
             if (error instanceof ZodError) {
                 console.log(error);
                 error.errors.forEach((err) => {
-                    toast.error(`${err.path[1]}: ${err.message}`);
+                    toast.error(`${err.path[1] || "Error"}: ${err.message}`);
                 });
                 return;
             }
@@ -520,25 +521,29 @@ function SellingPrices({
         <div className={'space-y-2'}>
             <h2 className={'font-bold'}>Selling Prices</h2>
             {rows.map((row, rowIndex) => (
-                <div key={rowIndex} className={'flex gap-8'}>
+                <div key={rowIndex} className={'flex gap-8 items-end'}>
                     {sellingPricesColumns.map((col, colIndex) => (
-                        <Input
-                            key={colIndex}
-                            type={col.type}
-                            placeholder={`Enter the ${col.label}`}
-                            disabled={disabled}
-                            // @ts-ignore
-                            value={row[col.name]}
-                            onChange={(e) =>
-                                handleInputChange(
-                                    rowIndex,
-                                    col.name,
-                                    col.type === 'number'
-                                        ? e.target.valueAsNumber
-                                        : e.target.value,
-                                )
-                            }
-                        />
+                        <div className='space-y-2'>
+                            <Label>{col.label}</Label>
+                            <Input
+                                key={colIndex}
+                                type={col.type}
+                                // placeholder={`Enter the ${col.label}`}
+                                placeholder={col.placeholder}
+                                disabled={disabled}
+                                // @ts-ignore
+                                value={row[col.name]}
+                                onChange={(e) =>
+                                    handleInputChange(
+                                        rowIndex,
+                                        col.name,
+                                        col.type === 'number'
+                                            ? e.target.valueAsNumber
+                                            : e.target.value,
+                                    )
+                                }
+                            />
+                        </div>
                     ))}
                     <Button
                         variant={'destructive'}

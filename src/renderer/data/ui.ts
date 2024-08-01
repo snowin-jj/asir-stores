@@ -106,21 +106,25 @@ export const sellingPricesColumns = [
         type: 'number',
         name: 'quantity',
         label: 'Quantity',
+        placeholder: 'Eg: 1'
     },
     {
         type: 'text',
         name: 'unit',
         label: 'Selling Unit',
+        placeholder: 'Eg: kg'
     },
     {
         type: 'number',
         name: 'amount',
-        label: 'Amount',
+        label: 'Selling Amount',
+        placeholder: 'Eg: 10'
     },
 
     {
         type: 'number',
         name: 'taxValue',
         label: 'Tax Value',
+        placeholder: 'Eg: 18'
     },
 ];

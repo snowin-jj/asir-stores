@@ -51,7 +51,7 @@ export async function createOrder(payload: OrderPayloadWithItems) {
             paymentMethod: payload.paymentMethod,
             isPaid: payload.isPaid,
             paidAt: payload.paidAt,
-            totalPrice: Math.round(totalPrice),
+            totalPrice: totalPrice,
             createdAt: new Date(),
         });
 

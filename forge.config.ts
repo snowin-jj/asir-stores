@@ -53,6 +53,18 @@ const config: ForgeConfig = {
             [FuseV1Options.OnlyLoadAppFromAsar]: true,
         }),
     ],
+    publishers: [
+        {
+            name: '@electron-forge/publisher-github',
+            config: {
+                repository: {
+                    owner: 'snowin-jj',
+                    name: 'asir-stores',
+                },
+                prerelease: false,
+            },
+        },
+    ],
 };
 
 export default config;

@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 
-const dbPath = path.join(os.homedir(), '.config', 'todo-app', 'store.sqlite3');
+const dbPath = path.join(os.homedir(), '.config', 'asir-store', 'store.sqlite3');
 
 try {
     // Check if the directory exists

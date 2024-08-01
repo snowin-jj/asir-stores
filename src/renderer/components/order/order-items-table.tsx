@@ -79,9 +79,9 @@ export function OrderItemsTable({
                                 className={cn(!isOrdering && 'text-right')}
                             >
                                 {formatCurrency(
-                                    Math.round(
+                                    (
                                         orderItem.price.amount *
-                                            orderItem.quantity,
+                                            orderItem.quantity
                                     ),
                                 )}
                             </TableCell>
@@ -110,7 +110,7 @@ export function OrderItemsTable({
                 <TableRow>
                     <TableCell colSpan={isOrdering ? 6 : 5}>Total</TableCell>
                     <TableCell className="text-right">
-                        {formatCurrency(Math.round(totalAmount))}
+                        {formatCurrency((totalAmount))}
                     </TableCell>
                 </TableRow>
             </TableFooter>
