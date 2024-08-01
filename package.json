@@ -46,6 +46,10 @@
         "name": "snowin-jj",
         "email": "snowin.developer@gmail.com"
     },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/snowin-jj/asir-stores"
+    },
     "license": "MIT",
     "dependencies": {
         "@hookform/resolvers": "^3.4.2",
@@ -67,6 +71,7 @@
         "clsx": "^2.1.1",
         "cmdk": "^1.0.0",
         "date-fns": "^3.6.0",
+        "dotenv": "^16.4.5",
         "electron-squirrel-startup": "^1.0.1",
         "knex": "^3.1.0",
         "lucide-react": "^0.379.0",

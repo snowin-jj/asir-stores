@@ -6,6 +6,7 @@ import { MakerRpm } from '@electron-forge/maker-rpm';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
+import 'dotenv/config';
 
 const config: ForgeConfig = {
     packagerConfig: {
@@ -63,6 +64,7 @@ const config: ForgeConfig = {
                     name: 'asir-stores',
                 },
                 prerelease: false,
+                token: process.env.GITHUB_TOKEN,
             },
         },
     ],
