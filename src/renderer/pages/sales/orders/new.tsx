@@ -58,7 +58,6 @@ export default function NewOrderPage() {
         (async () => {
             const data = await getCustomers();
             setCustomers(data);
-            console.log(location.state);
         })();
     }, []);
 
@@ -90,7 +89,7 @@ export default function NewOrderPage() {
         try {
             setLoading(true);
             if (!isPaid && !customer) {
-                throw new Error("Customer is required")
+                throw new Error('Customer is required');
             }
             const res = await createOrder({
                 orderItems,
@@ -103,7 +102,6 @@ export default function NewOrderPage() {
             toast.success(res);
             navigate('/sales/orders');
         } catch (error) {
-            console.log(error);
             const e = error as Error;
             toast.error(e.message);
         } finally {
@@ -178,8 +176,6 @@ function OrderItemsForm({
         const product = products.find((product) => product.id === productId);
         if (product) {
             setSelectedProduct(product);
-            console.log({product});
-            
         }
     }
 
@@ -237,14 +233,13 @@ function OrderItemsForm({
                         placeholder="Stock Level"
                         value={
                             selectedProduct && selectedPrice
-                                ? (
-                                    selectedPrice.unit == selectedProduct.purchasedUnit ? (
-                                        `${convertToPurchasedUnit(
-                                      selectedProduct.stock,
-                                      selectedProduct.baseUnitValue,
-                                  )} ${selectedProduct.purchasedUnit}`
-                                    ): `${selectedProduct.stock} ${selectedProduct.baseUnit}`
-                                )
+                                ? selectedPrice.unit ==
+                                  selectedProduct.purchasedUnit
+                                    ? `${convertToPurchasedUnit(
+                                          selectedProduct.stock,
+                                          selectedProduct.baseUnitValue,
+                                      )} ${selectedProduct.purchasedUnit}`
+                                    : `${selectedProduct.stock} ${selectedProduct.baseUnit}`
                                 : ''
                         }
                     />

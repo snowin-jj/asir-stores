@@ -16,7 +16,6 @@ export async function createTransaction(payload: TransactionPayload) {
         return res;
     } catch (error) {
         const e = error as Error;
-        console.log(e.message);
         throw new Error(e.message);
     }
 }
@@ -28,7 +27,6 @@ export async function getTransactions() {
         return transactions;
     } catch (error) {
         const e = error as Error;
-        console.log(e.message);
         throw new Error(e.message);
     }
 }
@@ -40,7 +38,6 @@ export async function getTransaction(transactionId: number) {
         return transactions;
     } catch (error) {
         const e = error as Error;
-        console.log(e.message);
         throw new Error(e.message);
     }
 }
@@ -52,7 +49,6 @@ export async function getTransactionsWithDetails() {
         return transactions;
     } catch (error) {
         const e = error as Error;
-        console.log(e.message);
         throw new Error(e.message);
     }
 }

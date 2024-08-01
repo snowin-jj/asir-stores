@@ -50,7 +50,7 @@ export async function createTransaction(
     } catch (error) {
         if (!t) await trx.rollback();
         const e = error as Error;
-        console.log(e);
+
         return JSON.parse('Failed to create transaction');
     }
 }
@@ -68,7 +68,7 @@ export async function getTransactions() {
         return JSON.stringify(transactions);
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to get transactions');
     }
 }
@@ -99,7 +99,7 @@ export async function getTransaction(transactionId: number) {
         return JSON.stringify({ ...transaction, product, price });
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to get transaction');
     }
 }
@@ -131,7 +131,7 @@ export async function getTransactionsWithDetails() {
         return JSON.stringify(transactionsWithDetails);
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to get transactions with details');
     }
 }

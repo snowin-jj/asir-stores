@@ -75,14 +75,12 @@ export default function CustomerForm({
             if (mode === 'VIEW') updateMode('VIEW');
         } catch (error) {
             if (error instanceof ZodError) {
-                console.log(error);
                 error.errors.forEach((err) => {
                     toast.error(`${err.path[1]}: ${err.message}`);
                 });
                 return;
             }
             const e = error as Error;
-            console.log(e);
             toast.error(e.message);
         } finally {
             setLoading(false);

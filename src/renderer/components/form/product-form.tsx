@@ -32,13 +32,13 @@ import { Label } from '../ui/label';
 const sellingPricesSchema = z
     .array(
         z.object({
-            amount: z.number({message: 'Amount is required'}),
+            amount: z.number({ message: 'Amount is required' }),
             unit: z.string(),
-            taxValue: z.number({message: 'Tax Value is required'}),
-            quantity: z.number({message: 'Quantity is required'}),
+            taxValue: z.number({ message: 'Tax Value is required' }),
+            quantity: z.number({ message: 'Quantity is required' }),
         }),
     )
-    .min(1, {message: 'Add at-least one selling price'});
+    .min(1, { message: 'Add at-least one selling price' });
 
 const formSchema = z.object({
     name: z.string(),
@@ -151,14 +151,12 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
             }
         } catch (error) {
             if (error instanceof ZodError) {
-                console.log(error);
                 error.errors.forEach((err) => {
-                    toast.error(`${err.path[1] || "Error"}: ${err.message}`);
+                    toast.error(`${err.path[1] || 'Error'}: ${err.message}`);
                 });
                 return;
             }
             const e = error as Error;
-            console.log(e);
             toast.error(e.message);
         } finally {
             setLoading(false);
@@ -512,7 +510,6 @@ function SellingPrices({
             handleRemoveRow(rowIndex);
         } catch (error) {
             const e = error as Error;
-            console.log(e);
             toast.error(e.message);
         }
     }
@@ -521,9 +518,9 @@ function SellingPrices({
         <div className={'space-y-2'}>
             <h2 className={'font-bold'}>Selling Prices</h2>
             {rows.map((row, rowIndex) => (
-                <div key={rowIndex} className={'flex gap-8 items-end'}>
+                <div key={rowIndex} className={'flex items-end gap-8'}>
                     {sellingPricesColumns.map((col, colIndex) => (
-                        <div className='space-y-2'>
+                        <div className="space-y-2">
                             <Label>{col.label}</Label>
                             <Input
                                 key={colIndex}

@@ -11,7 +11,7 @@ export async function createCategory(payload: CategoryPayload) {
         return JSON.stringify(createdCategory);
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return 'Failed to create category.';
     }
 }
@@ -22,7 +22,7 @@ export async function getCategories() {
         return JSON.stringify(categories);
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return 'Failed to get categories.';
     }
 }
@@ -36,7 +36,7 @@ export async function getCategory(categoryId: number) {
         return JSON.stringify(category);
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return 'Failed to get category.';
     }
 }

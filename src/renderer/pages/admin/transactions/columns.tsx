@@ -95,8 +95,6 @@ export const columns: ColumnDef<TransactionWithProduct>[] = [
         },
         cell: ({ row }) => {
             const date = row.original;
-            console.log(date.transactionDate);
-
             return (
                 <div className="px-5">
                     <span>{formatDate(new Date(date.transactionDate))}</span>

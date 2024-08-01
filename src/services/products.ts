@@ -49,7 +49,7 @@ export async function createProduct(payload: ProductPayload) {
     } catch (error) {
         await trx.rollback();
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to create product.');
     }
 }
@@ -111,7 +111,7 @@ export async function updateProduct(
     } catch (error) {
         await trx.rollback();
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to update the product');
     }
 }
@@ -122,7 +122,7 @@ export async function deleteProduct(productId: number) {
         return JSON.stringify('Product deleted');
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to delete the product');
     }
 }
@@ -139,7 +139,7 @@ export async function getProduct(productId: number) {
         return JSON.stringify({ ...product, category, sellingPrices });
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to get product');
     }
 }
@@ -151,7 +151,7 @@ export async function getProducts() {
         return JSON.stringify(products);
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to get products.');
     }
 }
@@ -179,7 +179,7 @@ export async function getProductsWithDetails() {
         return JSON.stringify(getProductsWithPriceAndCategory(products));
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to get products with details.');
     }
 }
@@ -192,7 +192,7 @@ export async function getPrices(productId: number) {
         return JSON.stringify(prices);
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to get prices.');
     }
 }
@@ -206,7 +206,7 @@ export async function getPrice(priceId: number) {
         return JSON.stringify(price);
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to get price.');
     }
 }
@@ -217,7 +217,7 @@ export async function deletePrice(priceId: number) {
         return JSON.stringify('Price deleted');
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to delete price.');
     }
 }

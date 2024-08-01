@@ -1,8 +1,8 @@
 {
     "name": "asir-stores",
     "productName": "asir-stores",
-    "version": "1.0.0",
-    "description": "My Electron application description",
+    "version": "1.0.2",
+    "description": "A stock management app for Asir Stores",
     "main": ".vite/build/main.js",
     "scripts": {
         "start": "electron-forge start",

@@ -155,7 +155,6 @@ function OrderSummary({ order }: OrderSummaryProps) {
             toast.success(res);
         } catch (error) {
             const e = error as Error;
-            console.log(e);
             toast.error(e.message);
         } finally {
             setLoading(false);

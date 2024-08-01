@@ -103,7 +103,7 @@ export async function createOrder(payload: OrderPayloadWithItems) {
     } catch (error) {
         await trx.rollback();
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to create order.');
     }
 }
@@ -150,7 +150,7 @@ export async function getOrdersWithDetails() {
         return JSON.stringify(formatOrdersWithDetails(orders));
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to get orders.');
     }
 }
@@ -218,7 +218,7 @@ export async function getOrderWithDetails(orderId: number) {
         });
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to get orders.');
     }
 }
@@ -243,7 +243,7 @@ export async function getOrders() {
         return JSON.stringify(formatOrdersWithCustomer(orders));
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to create order.');
     }
 }
@@ -254,7 +254,7 @@ export async function updateOrder(orderId: number, payload: OrderPayload) {
         return JSON.stringify('Order Updated');
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to update order.');
     }
 }
@@ -271,7 +271,7 @@ export async function getCustomers() {
         return JSON.stringify(customers);
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to get customers.');
     }
 }
@@ -285,7 +285,7 @@ export async function getCustomer(customerId: number) {
         return JSON.stringify(customer);
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to get customer.');
     }
 }
@@ -300,7 +300,7 @@ export async function createCustomer(payload: CustomerPayload) {
         return JSON.stringify('Customer Created');
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to create customer.');
     }
 }
@@ -316,7 +316,7 @@ export async function updateCustomer(
         return JSON.stringify('Customer Updated');
     } catch (error) {
         const e = error as Error;
-        console.log(e);
+
         return JSON.stringify('Failed to update customer.');
     }
 }
