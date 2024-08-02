@@ -18,7 +18,7 @@ import { Input } from '@/renderer/components/ui/input';
 import { Switch } from '@/renderer/components/ui/switch';
 import { Textarea } from '@/renderer/components/ui/textarea';
 import { sellingPricesColumns } from '@/renderer/data/ui';
-import { ProductPayload } from '@/types/product';
+import { ProductPayloadWithPrices } from '@/types/product';
 import { convertToBaseUnit, convertToPurchasedUnit } from '@/utils/formatters';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X } from 'lucide-react';
@@ -127,7 +127,7 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
                 const res = await createProduct({
                     ...values,
                     sellingPrices,
-                } as ProductPayload);
+                } as ProductPayloadWithPrices);
                 toast.success(res);
                 navigate('/admin/products');
             } else if (mode === 'EDIT') {
@@ -530,6 +530,7 @@ function SellingPrices({
                                 disabled={disabled}
                                 // @ts-ignore
                                 value={row[col.name]}
+                                step={0.1}
                                 onChange={(e) =>
                                     handleInputChange(
                                         rowIndex,

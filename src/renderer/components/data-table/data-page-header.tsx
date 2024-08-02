@@ -12,7 +12,7 @@ export interface DataHeaderButtonProps {
         | 'ghost';
     path?: string;
     navState?: object;
-    action?: () => void;
+    action?: () => Promise<void>;
 }
 
 interface DataPageHeaderProps {
@@ -27,8 +27,8 @@ export function DataPageHeader({
 }: DataPageHeaderProps) {
     const navigate = useNavigate();
 
-    function handleClick(action: () => void) {
-        isBackBtn ? navigate(-1) : action();
+    async function handleClick(action: () => Promise<void>) {
+        isBackBtn ? navigate(-1) : await action();
     }
 
     return (

@@ -2,7 +2,7 @@ import { ipcRenderer, contextBridge } from 'electron';
 
 import type { CategoryPayload } from './types/category';
 import { IPC_ACTIONS } from './handlers';
-import { ProductPayload } from './types/product';
+import { ProductPayloadWithPrices } from './types/product';
 import { TransactionPayload } from './types/transaction';
 import {
     CustomerPayload,
@@ -18,7 +18,7 @@ const WINDOW_API = {
         ipcRenderer.invoke(IPC_ACTIONS.GET_CATEGORIES),
     getCategory: async (categoryId: number): Promise<string> =>
         ipcRenderer.invoke(IPC_ACTIONS.GET_CATEGORY, categoryId),
-    createProduct: async (payload: ProductPayload): Promise<string> =>
+    createProduct: async (payload: ProductPayloadWithPrices): Promise<string> =>
         ipcRenderer.invoke(IPC_ACTIONS.CREATE_PRODUCT, payload),
     updateProduct: async (
         productId: number,
@@ -33,6 +33,8 @@ const WINDOW_API = {
         ipcRenderer.invoke(IPC_ACTIONS.GET_PRODUCTS),
     getProductsWithDetails: async (): Promise<string> =>
         ipcRenderer.invoke(IPC_ACTIONS.GET_PRODUCTS_WITH_DETAILS),
+    importProduct: async (): Promise<string> =>
+        ipcRenderer.invoke(IPC_ACTIONS.IMPORT_PRODUCT),
     getPrices: async (productId: number): Promise<string> =>
         ipcRenderer.invoke(IPC_ACTIONS.GET_PRICES, productId),
     getPrice: async (priceId: number): Promise<string> =>

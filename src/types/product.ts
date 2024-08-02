@@ -34,8 +34,10 @@ export interface ProductWithCategory extends ProductWithPrice {
 }
 
 export interface PricePayload extends Omit<Price, 'id' | 'productId'> {}
-
-export interface ProductPayload
+export interface ProductPayloadWithPrices
     extends Omit<Product, 'id' | 'createdAt' | 'updatedAt'> {
     sellingPrices: PricePayload[];
 }
+
+export interface ProductPayload
+    extends Omit<Product, 'id' | 'createdAt' | 'updatedAt'> {}

@@ -1,7 +1,7 @@
 import type {
     Price,
     Product,
-    ProductPayload,
+    ProductPayloadWithPrices,
     ProductWithCategory,
 } from '@/types/product';
 import { UpdateProductPayload } from '@/renderer/components/form/product-form';
@@ -46,7 +46,7 @@ export async function getProductsWithDetails() {
     }
 }
 
-export async function createProduct(payload: ProductPayload) {
+export async function createProduct(payload: ProductPayloadWithPrices) {
     try {
         const data = JSON.parse(await window.api.createProduct(payload));
         return data;
@@ -109,6 +109,15 @@ export async function getPrice(priceId: number) {
         return data;
     } catch (err) {
         const e = err as Error;
+        throw new Error(e.message);
+    }
+}
+
+export async function importProducts() {
+    try {
+        return JSON.parse(await window.api.importProduct());
+    } catch (error) {
+        const e = error as Error;
         throw new Error(e.message);
     }
 }

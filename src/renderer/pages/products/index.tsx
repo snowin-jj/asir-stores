@@ -36,7 +36,7 @@ export default function ProductsPage() {
             setButtons([
                 {
                     label: 'Export',
-                    action: () => console.log('Export the data'),
+                    action: async () => console.log('Export the data'),
                 },
                 { label: 'New Product', path: '/admin/products/new' },
             ]);

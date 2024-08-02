@@ -1,13 +1,18 @@
 import knex from '../lib/db';
 
 import { UpdateProductPayload } from '@/renderer/components/form/product-form';
-import type { Product, ProductPayload } from '../types/product';
+import type {
+    PricePayload,
+    Product,
+    ProductPayloadWithPrices,
+} from '../types/product';
 import { TABLES } from '../utils/constants';
+import { parseCSVFile } from '../utils/helpers';
 import { getProductsWithPriceAndCategory } from '../utils/product';
 import { getCategory } from './categories';
 import { createTransaction } from './transactions';
 
-export async function createProduct(payload: ProductPayload) {
+export async function createProduct(payload: ProductPayloadWithPrices) {
     const trx = await knex.transaction();
 
     try {
@@ -15,13 +20,13 @@ export async function createProduct(payload: ProductPayload) {
             await trx(TABLES.PRODUCTS).insert({
                 name: payload.name,
                 description: payload.description,
-                purchasedPrice: payload.purchasedPrice,
+                purchasedPrice: Number(payload.purchasedPrice),
                 purchasedUnit: payload.purchasedUnit,
                 baseUnit: payload.baseUnit,
-                baseUnitValue: payload.baseUnitValue,
-                categoryId: payload.categoryId,
-                reorderPoint: payload.reorderPoint,
-                isActive: payload.isActive,
+                baseUnitValue: Number(payload.baseUnitValue),
+                categoryId: Number(payload.categoryId),
+                reorderPoint: Number(payload.reorderPoint),
+                isActive: Boolean(payload.isActive),
                 createdAt: new Date(),
             })
         )[0];
@@ -29,7 +34,10 @@ export async function createProduct(payload: ProductPayload) {
         await Promise.all(
             payload.sellingPrices.map((price) => {
                 return trx(TABLES.PRICES).insert({
-                    ...price,
+                    amount: price.amount,
+                    quantity: price.quantity,
+                    taxValue: price.taxValue,
+                    unit: price.unit,
                     productId: productId,
                 });
             }),
@@ -48,8 +56,7 @@ export async function createProduct(payload: ProductPayload) {
         return JSON.stringify('Product created');
     } catch (error) {
         await trx.rollback();
-        const e = error as Error;
-
+        console.error('Failed to create product:', error);
         return JSON.stringify('Failed to create product.');
     }
 }
@@ -175,7 +182,6 @@ export async function getProductsWithDetails() {
                 'categories.description as categoryDescription',
             )
             .orderBy('createdAt', 'desc');
-
         return JSON.stringify(getProductsWithPriceAndCategory(products));
     } catch (error) {
         const e = error as Error;
@@ -219,5 +225,35 @@ export async function deletePrice(priceId: number) {
         const e = error as Error;
 
         return JSON.stringify('Failed to delete price.');
+    }
+}
+
+export async function importProducts() {
+    type PriceWithProductName = PricePayload & {
+        name: string;
+    };
+
+    try {
+        const productsData = (await parseCSVFile(
+            'C:\\Users\\snowi\\code\\project\\desktop\\asir-stores\\data\\products.csv',
+        )) as ProductPayloadWithPrices[];
+        const pricesData = (await parseCSVFile(
+            'C:\\Users\\snowi\\code\\project\\desktop\\asir-stores\\data\\prices.csv',
+        )) as PriceWithProductName[];
+
+        await Promise.all(
+            productsData.map((p) => {
+                const prices = pricesData.filter(
+                    (price) => price.name === p.name,
+                );
+                return createProduct({
+                    ...p,
+                    sellingPrices: prices,
+                });
+            }),
+        );
+    } catch (error) {
+        console.error('Failed to import products:', error);
+        return JSON.stringify('Failed to import products');
     }
 }

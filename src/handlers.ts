@@ -14,6 +14,7 @@ import {
     getProduct,
     getProducts,
     getProductsWithDetails,
+    importProducts,
     updateProduct,
 } from './services/products';
 import {
@@ -34,7 +35,7 @@ import {
     updateOrder,
 } from './services/orders';
 import type { CategoryPayload } from './types/category';
-import type { ProductPayload } from './types/product';
+import type { ProductPayloadWithPrices } from './types/product';
 import type { TransactionPayload } from './types/transaction';
 import type {
     CustomerPayload,
@@ -54,6 +55,7 @@ export const IPC_ACTIONS = {
     CREATE_PRODUCT: 'CREATE_PRODUCT',
     UPDATE_PRODUCT: 'UPDATE_PRODUCT',
     DELETE_PRODUCT: 'DELETE_PRODUCT',
+    IMPORT_PRODUCT: 'IMPORT_PRODUCT',
     GET_PRICES: 'GET_PRICES',
     GET_PRICE: 'GET_PRICE',
     DELETE_PRICE: 'DELETE_PRICE',
@@ -90,8 +92,10 @@ const ipcHandlers = [
     },
     {
         event: IPC_ACTIONS.CREATE_PRODUCT,
-        callback: async (_: IpcMainInvokeEvent, payload: ProductPayload) =>
-            await createProduct(payload),
+        callback: async (
+            _: IpcMainInvokeEvent,
+            payload: ProductPayloadWithPrices,
+        ) => await createProduct(payload),
     },
     {
         event: IPC_ACTIONS.UPDATE_PRODUCT,
@@ -119,6 +123,10 @@ const ipcHandlers = [
         event: IPC_ACTIONS.GET_PRODUCTS_WITH_DETAILS,
         callback: async (_: IpcMainInvokeEvent) =>
             await getProductsWithDetails(),
+    },
+    {
+        event: IPC_ACTIONS.IMPORT_PRODUCT,
+        callback: async (_: IpcMainInvokeEvent) => await importProducts(),
     },
     {
         event: IPC_ACTIONS.GET_PRICES,

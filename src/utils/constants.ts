@@ -8,6 +8,8 @@ export const TABLES = {
     TRANSACTIONS: 'transactions',
 };
 
+export type TableNames = typeof TABLES
+
 export const ENV =
     process.env.NODE_ENV ||
     ('production' as 'development' | 'production' | 'test');
