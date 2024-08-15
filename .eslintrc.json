@@ -17,6 +17,7 @@
         "@typescript-eslint/no-empty-interface": "off",
         "@typescript-eslint/no-unused-vars": "off",
         "@typescript-eslint/ban-ts-comment": "off",
-        "import/no-unresolved": "off"
+        "import/no-unresolved": "off",
+        "@typescript-eslint/ban-types": "off"
     }
 }

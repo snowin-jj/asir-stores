@@ -10,24 +10,24 @@ import {
     TableHeader,
     TableRow,
 } from '../ui/table';
+import { calculateTotalPrice } from '@/utils/order';
 
 interface OrderItemsTableProps {
     orderItems: OrderItemWithDetails[];
     handleItemSelect?: (orderItem: OrderItemWithDetails) => void;
     isOrdering?: boolean;
     handleRemoveItem?: (idx: number) => void;
+    discount?: number;
 }
 
 export function OrderItemsTable({
     orderItems,
     handleItemSelect,
     handleRemoveItem,
+    discount,
     isOrdering = false,
 }: OrderItemsTableProps) {
-    const totalAmount = orderItems.reduce((acc, item) => {
-        const itemsPriceWithTax = item.price.amount * item.quantity;
-        return acc + itemsPriceWithTax;
-    }, 0);
+    const totalAmount = calculateTotalPrice(orderItems);
 
     return (
         <Table>
@@ -79,10 +79,7 @@ export function OrderItemsTable({
                                 className={cn(!isOrdering && 'text-right')}
                             >
                                 {formatCurrency(
-                                    (
-                                        orderItem.price.amount *
-                                            orderItem.quantity
-                                    ),
+                                    orderItem.price.amount * orderItem.quantity,
                                 )}
                             </TableCell>
                             {isOrdering && (
@@ -107,10 +104,16 @@ export function OrderItemsTable({
                 )}
             </TableBody>
             <TableFooter>
+                <TableRow className="bg-background">
+                    <TableCell colSpan={isOrdering ? 6 : 5}>Discount</TableCell>
+                    <TableCell className="text-right">
+                        {formatCurrency(discount || 0)}
+                    </TableCell>
+                </TableRow>
                 <TableRow>
                     <TableCell colSpan={isOrdering ? 6 : 5}>Total</TableCell>
                     <TableCell className="text-right">
-                        {formatCurrency((totalAmount))}
+                        {formatCurrency(totalAmount - (discount || 0))}
                     </TableCell>
                 </TableRow>
             </TableFooter>

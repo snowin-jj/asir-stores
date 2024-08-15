@@ -2,7 +2,7 @@ import { getTransaction } from '@/renderer/api/transactions';
 import BackButton from '@/renderer/components/back-button';
 import { Button } from '@/renderer/components/ui/button';
 import { TransactionWithProduct } from '@/types/transaction';
-import { convertToBaseUnit } from '@/utils/formatters';
+import { convertToBaseUnit, formatDateTime } from '@/utils/formatters';
 import { ExternalLink } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -44,11 +44,7 @@ export default function TransactionPage() {
                     <div className="flex gap-10">
                         <span>
                             <strong>Transaction Date</strong>
-                            <p>
-                                {new Date(
-                                    transaction.transactionDate,
-                                ).toDateString()}
-                            </p>
+                            <p>{formatDateTime(transaction.transactionDate)}</p>
                         </span>
                         <span>
                             <strong>Transaction Type</strong>

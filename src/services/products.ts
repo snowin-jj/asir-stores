@@ -1,20 +1,14 @@
 import knex from '../lib/db';
 
 import { UpdateProductPayload } from '@/renderer/components/form/product-form';
-import type {
-    PricePayload,
-    Product,
-    ProductPayloadWithPrices,
-} from '../types/product';
+import type { Product, ProductPayloadWithPrices } from '../types/product';
 import { TABLES } from '../utils/constants';
-import { parseCSVFile } from '../utils/helpers';
 import { getProductsWithPriceAndCategory } from '../utils/product';
 import { getCategory } from './categories';
-import { createTransaction } from './transactions';
+// import { createTransaction } from './transactions';
 
 export async function createProduct(payload: ProductPayloadWithPrices) {
     const trx = await knex.transaction();
-
     try {
         const productId = (
             await trx(TABLES.PRODUCTS).insert({
@@ -43,14 +37,14 @@ export async function createProduct(payload: ProductPayloadWithPrices) {
             }),
         );
 
-        await createTransaction(
-            {
-                quantity: payload.stock,
-                productId,
-                transactionType: 'PURCHASE',
-            },
-            trx,
-        );
+        // await createTransaction(
+        //     {
+        //         quantity: payload.stock,
+        //         productId,
+        //         transactionType: 'PURCHASE',
+        //     },
+        //     trx,
+        // );
 
         await trx.commit();
         return JSON.stringify('Product created');
@@ -225,35 +219,5 @@ export async function deletePrice(priceId: number) {
         const e = error as Error;
 
         return JSON.stringify('Failed to delete price.');
-    }
-}
-
-export async function importProducts() {
-    type PriceWithProductName = PricePayload & {
-        name: string;
-    };
-
-    try {
-        const productsData = (await parseCSVFile(
-            'C:\\Users\\snowi\\code\\project\\desktop\\asir-stores\\data\\products.csv',
-        )) as ProductPayloadWithPrices[];
-        const pricesData = (await parseCSVFile(
-            'C:\\Users\\snowi\\code\\project\\desktop\\asir-stores\\data\\prices.csv',
-        )) as PriceWithProductName[];
-
-        await Promise.all(
-            productsData.map((p) => {
-                const prices = pricesData.filter(
-                    (price) => price.name === p.name,
-                );
-                return createProduct({
-                    ...p,
-                    sellingPrices: prices,
-                });
-            }),
-        );
-    } catch (error) {
-        console.error('Failed to import products:', error);
-        return JSON.stringify('Failed to import products');
     }
 }

@@ -8,6 +8,9 @@ export interface Order {
     paymentMethod?: PaymentMethod;
     isPaid?: boolean;
     paidAt?: Date;
+    paidAmount: number;
+    balanceAmount: number;
+    discount: number;
     totalPrice: number;
     createdAt: Date;
     updatedAt: Date;
@@ -55,7 +58,7 @@ export interface CustomerPayload
     extends Omit<Customer, 'id' | 'createdAt' | 'updatedAt'> {}
 
 export interface OrderPayload
-    extends Omit<Order, 'id' | 'createdAt' | 'updatedAt'> {}
+    extends Omit<Order, 'id' | 'createdAt' | 'updatedAt' | 'discount'> {}
 export interface OrderPayloadWithItems
     extends Omit<Order, 'id' | 'createdAt' | 'updatedAt' | 'totalPrice'> {
     orderItems: Omit<OrderItem, 'id' | 'orderId'>[];

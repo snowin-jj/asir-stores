@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/renderer/components/ui/button';
 import { type Panel, changePanel } from '../store';
+import Spinner from '../components/ui/Spinner';
 
 export default function HomePage() {
     const navigate = useNavigate();

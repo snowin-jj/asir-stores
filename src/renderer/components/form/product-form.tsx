@@ -47,7 +47,7 @@ const formSchema = z.object({
     purchasedUnit: z.string(),
     baseUnit: z.string(),
     baseUnitValue: z.number(),
-    stock: z.number(),
+    stock: z.number().optional().default(0),
     reorderPoint: z.number(),
     categoryId: z.number(),
     isActive: z.boolean(),
@@ -97,10 +97,11 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
             baseUnit: payload?.baseUnit,
             baseUnitValue: payload?.baseUnitValue,
             reorderPoint: payload?.reorderPoint,
-            stock: convertToPurchasedUnit(
-                payload?.stock,
-                payload?.baseUnitValue,
-            ),
+            stock:
+                convertToPurchasedUnit(
+                    payload?.stock,
+                    payload?.baseUnitValue,
+                ) || 0,
             // @ts-ignore
             isActive: payload ? (payload.isActive === 0 ? false : true) : false,
             categoryId: payload?.categoryId,
@@ -286,6 +287,8 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
                         <FormField
                             control={form.control}
                             name="stock"
+                            disabled={true}
+                            // disabled={mode === 'EDIT' || mode === 'VIEW'}
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
@@ -300,10 +303,7 @@ export function ProductForm({ mode, payload }: ProductFormProps) {
                                             {...field}
                                             type="number"
                                             placeholder="Stock"
-                                            disabled={
-                                                mode === 'EDIT' ||
-                                                mode === 'VIEW'
-                                            }
+                                            value={0}
                                             onChange={(e) =>
                                                 form.setValue(
                                                     'stock',

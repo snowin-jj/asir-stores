@@ -5,7 +5,7 @@ import {
 } from '@/lib/utils';
 import { Separator } from '@/renderer/components/ui/separator';
 import { OrderWithDetails } from '@/types/order';
-import { formatCurrency } from '@/utils/formatters';
+import { formatCurrency, formatDate, formatDateTime } from '@/utils/formatters';
 import { ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {
@@ -74,7 +74,7 @@ export function SelectedOrder({ selectedOrder }: SelectedOrderProps) {
                             <span className="text-muted-foreground">
                                 Sub Total
                             </span>
-                            <span>
+                            <span className="text-green-500">
                                 {formatCurrency(
                                     Number(
                                         calculateOrderItemsSubTotal(
@@ -85,8 +85,10 @@ export function SelectedOrder({ selectedOrder }: SelectedOrderProps) {
                             </span>
                         </li>
                         <li className="flex items-center justify-between">
-                            <span className="text-muted-foreground">Tax</span>
-                            <span>
+                            <span className="text-muted-foreground">
+                                Tax Amount
+                            </span>
+                            <span className="text-green-500">
                                 {formatCurrency(
                                     Number(
                                         calculateOrderItemsTaxAmount(
@@ -96,10 +98,23 @@ export function SelectedOrder({ selectedOrder }: SelectedOrderProps) {
                                 )}
                             </span>
                         </li>
+                        <li className="flex items-center justify-between">
+                            <span className="text-muted-foreground">
+                                Discount
+                            </span>
+                            <span className="text-red-500">
+                                {formatCurrency(selectedOrder.discount)}
+                            </span>
+                        </li>
                         <li className="flex items-center justify-between font-semibold">
-                            <span className="text-muted-foreground">Total</span>
+                            <span className="text-muted-foreground">
+                                Total Amount
+                            </span>
                             <span>
-                                {formatCurrency(selectedOrder.totalPrice)}
+                                {formatCurrency(
+                                    selectedOrder.totalPrice -
+                                        selectedOrder.discount,
+                                )}
                             </span>
                         </li>
                     </ul>
@@ -140,17 +155,25 @@ export function SelectedOrder({ selectedOrder }: SelectedOrderProps) {
                             </dt>
                             <dd>{selectedOrder.paymentMethod || 'UNPAID'}</dd>
                         </div>
+                        <div className="flex items-center justify-between">
+                            <dt className="flex items-center gap-1 text-muted-foreground">
+                                Amount Paid
+                            </dt>
+                            <dd>{formatCurrency(selectedOrder.paidAmount)}</dd>
+                        </div>
                     </dl>
                 </div>
             </CardContent>
-            <CardFooter className="flex flex-row items-center justify-between border-t bg-muted/50 px-6 py-3">
-                <div className="flex gap-2 text-xs text-muted-foreground">
-                    <p>Updated</p>
-                    <time dateTime="2023-11-23">
-                        {new Date(selectedOrder.updatedAt).toDateString()}
-                    </time>
-                </div>
-            </CardFooter>
+            {selectedOrder.isPaid ? (
+                <CardFooter className="flex flex-row items-center justify-between border-t bg-muted/50 px-6 py-3">
+                    <div className="flex gap-2 text-xs text-muted-foreground">
+                        <p>Paid At</p>
+                        <time dateTime={selectedOrder.paidAt.toString()}>
+                            {formatDate(selectedOrder.paidAt)}
+                        </time>
+                    </div>
+                </CardFooter>
+            ) : null}
         </Card>
     );
 }

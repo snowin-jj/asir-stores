@@ -9,6 +9,7 @@
         "package": "electron-forge package",
         "make": "electron-forge make",
         "publish": "electron-forge publish",
+        "rebuild": "electron-rebuild -f -w better-sqlite3",
         "lint": "eslint --ext .ts,.tsx .",
         "migrate": "ts-node -r tsconfig-paths/register node_modules/.bin/knex migrate:latest",
         "seed": "ts-node -r tsconfig-paths/register node_modules/.bin/knex seed:run"
@@ -31,6 +32,7 @@
         "@typescript-eslint/parser": "^5.0.0",
         "autoprefixer": "^10.4.19",
         "electron": "30.0.6",
+        "electron-rebuild": "^3.2.9",
         "eslint": "^8.0.1",
         "eslint-plugin-import": "^2.25.0",
         "postcss": "^8.4.38",
@@ -70,7 +72,6 @@
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
         "cmdk": "^1.0.0",
-        "csv-parser": "^3.0.0",
         "date-fns": "^3.6.0",
         "dotenv": "^16.4.5",
         "electron-squirrel-startup": "^1.0.1",

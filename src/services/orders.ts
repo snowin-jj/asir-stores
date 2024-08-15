@@ -52,6 +52,9 @@ export async function createOrder(payload: OrderPayloadWithItems) {
             isPaid: payload.isPaid,
             paidAt: payload.paidAt,
             totalPrice: totalPrice,
+            paidAmount: payload.paidAmount,
+            balanceAmount: payload.balanceAmount,
+            discount: payload.discount,
             createdAt: new Date(),
         });
 
@@ -202,6 +205,9 @@ export async function getOrderWithDetails(orderId: number) {
             isPaid: order.isPaid,
             paidAt: order.paidAt,
             totalPrice: order.totalPrice,
+            paidAmount: order.paidAmount,
+            balanceAmount: order.balanceAmount,
+            discount: order.discount,
             createdAt: order.createdAt,
             updatedAt: order.updatedAt,
             customer: {
@@ -250,7 +256,9 @@ export async function getOrders() {
 
 export async function updateOrder(orderId: number, payload: OrderPayload) {
     try {
-        await knex(TABLES.ORDERS).update(payload).where('id', orderId);
+        await knex(TABLES.ORDERS)
+            .update({ ...payload, updatedAt: new Date().toISOString() })
+            .where('id', orderId);
         return JSON.stringify('Order Updated');
     } catch (error) {
         const e = error as Error;

@@ -17,6 +17,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/renderer/components/ui/card';
+import { Input } from '@/renderer/components/ui/input';
 import { Label } from '@/renderer/components/ui/label';
 import {
     Select,
@@ -36,9 +37,9 @@ import {
 } from '@/renderer/components/ui/table';
 import { PAYMENT_METHODS } from '@/renderer/data/ui';
 import { OrderWithDetails, PaymentMethod } from '@/types/order';
-import { formatCurrency } from '@/utils/formatters';
+import { formatCurrency, formatDateTime } from '@/utils/formatters';
 import { LoaderCircle } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { EventHandler, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 
@@ -118,9 +119,39 @@ export default function OrderPage() {
                             </div>
                         )}
                     </div>
+                    <div className="space-y-4">
+                        <h3 className="text-2xl font-bold">Order Details</h3>
+                        <div className="flex flex-wrap gap-8">
+                            <div>
+                                <h5>Total Amount</h5>
+                                <p>{formatCurrency(order.totalPrice)}</p>
+                            </div>
+                            <div>
+                                <h5>Paid Amount</h5>
+                                <p>{formatCurrency(order.paidAmount)}</p>
+                            </div>
+                            <div>
+                                <h5>Balance Amount</h5>
+                                <p>{formatCurrency(order.balanceAmount)}</p>
+                            </div>
+                            <div>
+                                <h5>Discount Amount</h5>
+                                <p>{formatCurrency(order.discount)}</p>
+                            </div>
+                            {order.isPaid ? (
+                                <div>
+                                    <h5>Paid At</h5>
+                                    <p>{formatDateTime(order.paidAt)}</p>
+                                </div>
+                            ) : null}
+                        </div>
+                    </div>
                     <div className="space-y-6">
                         <h3 className="text-2xl font-bold">Ordered Items</h3>
-                        <OrderItemsTable orderItems={order.orderItems} />
+                        <OrderItemsTable
+                            orderItems={order.orderItems}
+                            discount={order.discount}
+                        />
                     </div>
                 </div>
 
@@ -136,22 +167,38 @@ interface OrderSummaryProps {
 
 function OrderSummary({ order }: OrderSummaryProps) {
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CASH');
+    const [amount, setAmount] = useState(0);
     const [loading, setLoading] = useState(false);
 
     function handlePaymentSelect(e: PaymentMethod) {
         setPaymentMethod(e);
     }
 
+    function handleAmountChange(e: React.ChangeEvent<HTMLInputElement>) {
+        setAmount(e.currentTarget.valueAsNumber);
+    }
+
     async function handlePaid() {
+        if (!amount || amount === 0) {
+            toast.error('Please enter amount correctly');
+            return;
+        }
         try {
             setLoading(true);
+            const paidAmount = order.paidAmount + amount;
+            const balanceAmount = order.balanceAmount - amount;
+            const isPaid = balanceAmount === 0 ? true : false;
             const res = await updateOrder(order.id, {
-                isPaid: true,
-                paidAt: new Date(),
+                isPaid,
+                paidAt: isPaid ? new Date() : null,
                 paymentMethod,
                 totalPrice: order.totalPrice,
+                paidAmount,
+                balanceAmount,
             });
-            order.isPaid = true;
+            order.balanceAmount = balanceAmount;
+            order.paidAmount = paidAmount;
+            order.isPaid = isPaid;
             toast.success(res);
         } catch (error) {
             const e = error as Error;
@@ -227,8 +274,12 @@ function OrderSummary({ order }: OrderSummaryProps) {
                     </p>
                 </div>
                 <div className="flex w-full justify-between">
+                    <p>Discount Amount</p>
+                    <p>{formatCurrency(order.discount)}</p>
+                </div>
+                <div className="flex w-full justify-between">
                     <p>Total Amount</p>
-                    <p>{formatCurrency(order.totalPrice)}</p>
+                    <p>{formatCurrency(order.paidAmount)}</p>
                 </div>
                 <Separator />
                 <div className="flex w-full justify-between">
@@ -263,6 +314,14 @@ function OrderSummary({ order }: OrderSummaryProps) {
                                     ))}
                                 </SelectContent>
                             </Select>
+                        </div>
+                        <div className="w-full space-y-2">
+                            <Label>Amount</Label>
+                            <Input
+                                type="number"
+                                onChange={handleAmountChange}
+                                placeholder="Enter the amount"
+                            />
                         </div>
                         <Button
                             disabled={loading}

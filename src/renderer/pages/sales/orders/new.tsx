@@ -11,7 +11,6 @@ import {
     CardHeader,
     CardTitle,
 } from '@/renderer/components/ui/card';
-import { Checkbox } from '@/renderer/components/ui/checkbox';
 import { Input } from '@/renderer/components/ui/input';
 import { Label } from '@/renderer/components/ui/label';
 import {
@@ -33,9 +32,10 @@ import {
     PaymentMethod,
 } from '@/types/order';
 import { Price, ProductWithCategory } from '@/types/product';
-import { convertToBaseUnit, convertToPurchasedUnit } from '@/utils/formatters';
+import { convertToPurchasedUnit } from '@/utils/formatters';
+import { calculateTotalPrice } from '@/utils/order';
 import { LoaderCircle } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -44,7 +44,9 @@ export default function NewOrderPage() {
     const location = useLocation();
 
     const [loading, setLoading] = useState(false);
-    const [isPaid, setIsPaid] = useState(false);
+    const [discountAmount, setDiscountAmount] = useState(0);
+    const [paidAmount, setPaidAmount] = useState(0);
+    const [totalAmount, setTotalAmount] = useState(0);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
         null,
     );
@@ -61,6 +63,10 @@ export default function NewOrderPage() {
         })();
     }, []);
 
+    useEffect(() => {
+        setTotalAmount(calculateTotalPrice(orderItems));
+    }, [orderItems]);
+
     function handleAddItem(item: OrderItemWithDetails) {
         setOrderItems((prev) => [...prev, item]);
     }
@@ -69,10 +75,6 @@ export default function NewOrderPage() {
         navigate('/sales/customers/new', {
             state: { orderItems, callbackUrl: '/sales/orders/new' },
         });
-    }
-
-    function handleIsPaid(e: boolean) {
-        setIsPaid(e);
     }
 
     function handlePaymentSelect(value: PaymentMethod) {
@@ -85,9 +87,36 @@ export default function NewOrderPage() {
         setCustomer(selectedCustomer);
     }
 
+    function handleAmountPaid(e: ChangeEvent<HTMLInputElement>) {
+        setPaidAmount(
+            isNaN(e.currentTarget.valueAsNumber)
+                ? 0
+                : e.currentTarget.valueAsNumber,
+        );
+    }
+
+    function handleDiscountAmount(e: ChangeEvent<HTMLInputElement>) {
+        setDiscountAmount(
+            isNaN(e.currentTarget.valueAsNumber)
+                ? 0
+                : e.currentTarget.valueAsNumber,
+        );
+    }
+
+    function handleRemoveItem(idx: number) {
+        setOrderItems(orderItems.filter((item, i) => i !== idx));
+    }
+
     async function handlePlaceOrder() {
+        if (!orderItems || orderItems.length <= 0) {
+            toast.error('No Items Added');
+            return;
+        }
+
         try {
             setLoading(true);
+            const balanceAmount = totalAmount - discountAmount - paidAmount;
+            const isPaid = balanceAmount === 0 ? true : false;
             if (!isPaid && !customer) {
                 throw new Error('Customer is required');
             }
@@ -97,7 +126,10 @@ export default function NewOrderPage() {
                     isPaid && !paymentMethod ? 'CASH' : paymentMethod,
                 customerId: customer?.id,
                 isPaid,
+                discount: discountAmount,
                 paidAt: isPaid && new Date(),
+                paidAmount: paidAmount,
+                balanceAmount: balanceAmount,
             });
             toast.success(res);
             navigate('/sales/orders');
@@ -107,10 +139,6 @@ export default function NewOrderPage() {
         } finally {
             setLoading(false);
         }
-    }
-
-    function handleRemoveItem(idx: number) {
-        setOrderItems(orderItems.filter((item, i) => i !== idx));
     }
 
     return (
@@ -128,16 +156,17 @@ export default function NewOrderPage() {
             <div className="flex w-full gap-20">
                 <OrderItemsTable
                     orderItems={orderItems}
+                    discount={discountAmount}
                     handleRemoveItem={handleRemoveItem}
                     isOrdering
                 />
                 <OrderDetails
-                    isPaid={isPaid}
                     paymentMethod={paymentMethod}
                     handlePaymentSelect={handlePaymentSelect}
                     customer={customer}
                     customers={customers}
-                    handleIsPaid={handleIsPaid}
+                    handleDiscountAmount={handleDiscountAmount}
+                    handleAmountPaid={handleAmountPaid}
                     handlePlaceOrder={handlePlaceOrder}
                     handleCustomerSelect={handleCustomerSelect}
                     handleCustomerCreate={handleCustomerCreate}
@@ -296,18 +325,17 @@ function OrderItemsForm({
 
 interface OrderDetailsProps {
     handleCustomerCreate: () => void;
-    isPaid: boolean;
     paymentMethod: PaymentMethod;
     handlePaymentSelect: (values: string) => void;
     customer: Customer;
     customers: Customer[];
-    handleIsPaid: (e: boolean) => void;
+    handleDiscountAmount: (e: ChangeEvent<HTMLInputElement>) => void;
+    handleAmountPaid: (e: ChangeEvent<HTMLInputElement>) => void;
     handleCustomerSelect: (customerId: number) => void;
     handlePlaceOrder: () => Promise<void>;
     loading: boolean;
 }
 function OrderDetails({
-    isPaid,
     customer,
     customers,
     paymentMethod,
@@ -315,31 +343,30 @@ function OrderDetails({
     handlePaymentSelect,
     handlePlaceOrder,
     handleCustomerCreate,
-    handleIsPaid,
+    handleDiscountAmount,
+    handleAmountPaid,
     handleCustomerSelect,
 }: OrderDetailsProps) {
     return (
         <div className="w-full max-w-xl space-y-4">
-            {isPaid && (
-                <div className="w-full space-y-2">
-                    <Label>Payment Method</Label>
-                    <Select
-                        onValueChange={handlePaymentSelect}
-                        defaultValue={paymentMethod || 'CASH'}
-                    >
-                        <SelectTrigger className="min-w-[180px]">
-                            <SelectValue placeholder="Select a Payment Method" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {PAYMENT_METHODS.map((method, idx) => (
-                                <SelectItem key={idx} value={method.VALUE}>
-                                    {method.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-            )}
+            <div className="w-full space-y-2">
+                <Label>Payment Method</Label>
+                <Select
+                    onValueChange={handlePaymentSelect}
+                    defaultValue={paymentMethod || 'CASH'}
+                >
+                    <SelectTrigger className="min-w-[180px]">
+                        <SelectValue placeholder="Select a Payment Method" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {PAYMENT_METHODS.map((method, idx) => (
+                            <SelectItem key={idx} value={method.VALUE}>
+                                {method.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
             <div className="w-full space-y-2">
                 <Label>Customer</Label>
                 <SearchSelector
@@ -351,18 +378,21 @@ function OrderDetails({
                     onCreate={handleCustomerCreate}
                 />
             </div>
-            <div className="flex items-center space-x-2">
-                <Checkbox
-                    id="isPaid"
-                    checked={isPaid}
-                    onCheckedChange={handleIsPaid}
+            <div className="w-full space-y-2">
+                <Label>Discount Amount</Label>
+                <Input
+                    type="number"
+                    onChange={handleDiscountAmount}
+                    placeholder="Enter the discount amount"
                 />
-                <Label
-                    htmlFor="isPaid"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                    Paid
-                </Label>
+            </div>
+            <div className="w-full space-y-2">
+                <Label>Amount</Label>
+                <Input
+                    type="number"
+                    onChange={handleAmountPaid}
+                    placeholder="Enter the amount"
+                />
             </div>
             <Button disabled={loading} onClick={handlePlaceOrder}>
                 {loading ? (

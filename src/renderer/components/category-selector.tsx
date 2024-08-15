@@ -75,10 +75,17 @@ export default function CategorySelector({
 
     useEffect(() => {
         (async () => {
-            const data = JSON.parse(
-                await window.api.getCategories(),
-            ) as unknown as Category[];
-            setCategories(data);
+            try {
+                const data = JSON.parse(
+                    await window.api.getCategories(),
+                ) as unknown as Category[];
+                setCategories(data);
+            } catch (error) {
+                toast.error('Failed to get categories');
+                console.error(
+                    'Failed to parse categories! Check the db connections',
+                );
+            }
         })();
     }, []);
 

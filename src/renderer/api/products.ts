@@ -112,12 +112,3 @@ export async function getPrice(priceId: number) {
         throw new Error(e.message);
     }
 }
-
-export async function importProducts() {
-    try {
-        return JSON.parse(await window.api.importProduct());
-    } catch (error) {
-        const e = error as Error;
-        throw new Error(e.message);
-    }
-}

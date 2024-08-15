@@ -1,5 +1,6 @@
 import { getOrdersWithDetails } from '@/renderer/api/orders';
 import { DataPageHeader } from '@/renderer/components/data-table/data-page-header';
+import LoadingScreen from '@/renderer/components/LoadingScreen';
 import { RecentOrders } from '@/renderer/components/order/recent-order';
 import { SelectedOrder } from '@/renderer/components/order/selected-order';
 import { Button } from '@/renderer/components/ui/button';

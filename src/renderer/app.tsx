@@ -1,25 +1,35 @@
+import { lazy } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 
 import HomePage from '@/renderer/pages/Home';
-import NotfoundPage from '@/renderer/pages/Notfound';
 import AdminLayout from '@/renderer/pages/admin';
-import AdminDashboardPage from '@/renderer/pages/admin/AdminDashboard';
-import TransactionsPage from '@/renderer/pages/admin/transactions';
-import NewTransactionPage from '@/renderer/pages/admin/transactions/new';
-import ProductsPage from '@/renderer/pages/products';
-import NewProductPage from '@/renderer/pages/products/new';
-import ProductPage from '@/renderer/pages/products/product';
-import TransactionPage from './pages/admin/transactions/transaction';
 import SalesLayout from './pages/sales';
-import SalesDashboard from './pages/sales/SalesDashboard';
-import OrdersPage from './pages/sales/orders';
-import OrderPage from './pages/sales/orders/order';
-import NewOrderPage from './pages/sales/orders/new';
-import SettingsPage from './pages/admin/settings';
-import CustomersPage from './pages/sales/customers';
-import NewCustomerPage from './pages/sales/customers/new';
-import CustomerPage from './pages/sales/customers/customer';
+
+const NotfoundPage = lazy(() => import('@/renderer/pages/Notfound'));
+const AdminDashboardPage = lazy(
+    () => import('@/renderer/pages/admin/AdminDashboard'),
+);
+const TransactionsPage = lazy(
+    () => import('@/renderer/pages/admin/transactions'),
+);
+const NewTransactionPage = lazy(
+    () => import('@/renderer/pages/admin/transactions/new'),
+);
+const ProductsPage = lazy(() => import('@/renderer/pages/products'));
+const NewProductPage = lazy(() => import('@/renderer/pages/products/new'));
+const ProductPage = lazy(() => import('@/renderer/pages/products/product'));
+const TransactionPage = lazy(
+    () => import('./pages/admin/transactions/transaction'),
+);
+const SalesDashboard = lazy(() => import('./pages/sales/SalesDashboard'));
+const OrdersPage = lazy(() => import('./pages/sales/orders'));
+const OrderPage = lazy(() => import('./pages/sales/orders/order'));
+const NewOrderPage = lazy(() => import('./pages/sales/orders/new'));
+const SettingsPage = lazy(() => import('./pages/admin/settings'));
+const CustomersPage = lazy(() => import('./pages/sales/customers'));
+const NewCustomerPage = lazy(() => import('./pages/sales/customers/new'));
+const CustomerPage = lazy(() => import('./pages/sales/customers/customer'));
 
 export default function App() {
     return (

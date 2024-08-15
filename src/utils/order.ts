@@ -1,3 +1,5 @@
+import { OrderItemWithDetails } from '@/types/order';
+
 export function formatOrdersWithDetails(orders: any[]) {
     return orders.reduce((result: any, order) => {
         const existingOrder = result.find((o: any) => o.id === order.id);
@@ -39,6 +41,9 @@ export function formatOrdersWithDetails(orders: any[]) {
                 isPaid: order.isPaid,
                 paidAt: order.paidAt,
                 totalPrice: order.totalPrice,
+                balanceAmount: order.balanceAmount,
+                paidAmount: order.paidAmount,
+                discount: order.discount,
                 createdAt: order.createdAt,
                 updatedAt: order.updatedAt,
                 customer: {
@@ -109,6 +114,9 @@ export function formatOrdersWithCustomer(orders: any[]) {
                 isPaid: order.isPaid,
                 paidAt: order.paidAt,
                 totalPrice: order.totalPrice,
+                balanceAmount: order.balanceAmount,
+                paidAmount: order.paidAmount,
+                discount: order.discount,
                 createdAt: order.createdAt,
                 updatedAt: order.updatedAt,
                 customer: {
@@ -157,4 +165,11 @@ export function formatOrderItems(orderItems: any[]) {
             },
         };
     });
+}
+
+export function calculateTotalPrice(orderItems: OrderItemWithDetails[]) {
+    return orderItems.reduce((acc, item) => {
+        const itemsPriceWithTax = item.price.amount * item.quantity;
+        return acc + itemsPriceWithTax;
+    }, 0);
 }

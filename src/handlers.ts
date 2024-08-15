@@ -14,7 +14,6 @@ import {
     getProduct,
     getProducts,
     getProductsWithDetails,
-    importProducts,
     updateProduct,
 } from './services/products';
 import {
@@ -123,10 +122,6 @@ const ipcHandlers = [
         event: IPC_ACTIONS.GET_PRODUCTS_WITH_DETAILS,
         callback: async (_: IpcMainInvokeEvent) =>
             await getProductsWithDetails(),
-    },
-    {
-        event: IPC_ACTIONS.IMPORT_PRODUCT,
-        callback: async (_: IpcMainInvokeEvent) => await importProducts(),
     },
     {
         event: IPC_ACTIONS.GET_PRICES,

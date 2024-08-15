@@ -1,4 +1,4 @@
-import { OrderItemWithDetails, OrderWithDetails } from '@/types/order';
+import { OrderItemWithDetails } from '@/types/order';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -49,15 +49,6 @@ export function calculateOrderItemsTaxAmount(
                     ),
                 );
             return acc + calculateTaxAmount(amountWithTax, actualAmount);
-        }, 0)
-        .toFixed(2);
-}
-
-export function calculateTotalTax(orderItems: OrderItemWithDetails[]) {
-    return orderItems
-        .reduce((acc, item) => {
-            const tax = item.price.taxValue * item.quantity;
-            return acc + tax;
         }, 0)
         .toFixed(2);
 }
