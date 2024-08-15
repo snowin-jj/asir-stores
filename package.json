@@ -1,7 +1,7 @@
 {
     "name": "asir-stores",
     "productName": "Asir Store",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "A stock management app for Asir Stores",
     "main": ".vite/build/main.js",
     "scripts": {
